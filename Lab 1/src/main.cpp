@@ -12,7 +12,7 @@ int main() {
 
 void run() {
     database db = database();
-    db.init_tables();
+    printf("%d", db.init_tables());
     menu(&db);
 }
 

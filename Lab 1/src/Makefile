@@ -1,6 +1,6 @@
 CC=g++
 FLAGS=-Wall -Wextra -Werror
-BUILD=../build/rpbd1.exe
+BUILD=../build/lab1.exe
 LIBS=-lodbc32
 
 all: build

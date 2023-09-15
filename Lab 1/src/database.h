@@ -1,15 +1,11 @@
 #ifndef DATABASE_H
 
 #include <iostream>
+#include <windows.h>
 #include <odbcinst.h>
-#include <sql.h>
-#include <sqltypes.h>
 #include <sqlext.h>
 
 #define DATABASE_H
-#define USER L"us"
-#define PASS L"1234"
-#define DSN L"psqldsn"
 
 using namespace std;
 
