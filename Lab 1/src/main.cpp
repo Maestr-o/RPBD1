@@ -12,7 +12,7 @@ int main() {
 
 void run() {
     database db = database();
-    printf("%d", db.init_tables());
+    printf("Init tables: %d\n", db.init_tables());
     menu(&db);
 }
 
@@ -28,7 +28,7 @@ void menu(database *db) {
             }
             case 1: {
                 
-                system("cls");
+                system("clear");
                 break;
             }
         }
