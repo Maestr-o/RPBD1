@@ -11,11 +11,11 @@ build: main.o database.o
 main.o: main.cpp
 	@$(CC) $(FLAGS) -c main.cpp -o main.o
 
-database.o: database.cpp database.h
+database.o: database.cpp
 	@$(CC) $(FLAGS) -c database.cpp -o database.o
 
 clean:
-	rm -f *.o
+	@rm -f *.o
 
 rebuild:
 	clean all
