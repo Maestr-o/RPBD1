@@ -36,6 +36,10 @@ void Database::set_hstmt(SQLHSTMT x) {
 	hstmt = x;
 }
 
+void Database::set_ret(SQLRETURN x) {
+	ret = x;
+}
+
 int Database::connect() {
 	SQLCHAR* dsn = (SQLCHAR*)"psqldsn";
 	SQLCHAR* user = (SQLCHAR*)"us";
@@ -91,13 +95,6 @@ int Database::exec(const char* cmd) {
 	SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
 	ret = SQLExecDirect(hstmt, (SQLCHAR*)cmd, SQL_NTS);
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-	return ret;
-}
-
-int Database::exec_cont(const char* cmd) {
-	int ret;
-	SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
-	ret = SQLExecDirect(hstmt, (SQLCHAR*)cmd, SQL_NTS);
 	return ret;
 }
 

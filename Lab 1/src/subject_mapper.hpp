@@ -7,9 +7,15 @@
 
 class SubjectMapper : public Mapper {
 public:
-    int select(Database db) override {
-        int ret = db.exec_cont("select * from subjects;");
-        if (!SQL_SUCCEEDED(ret)) return 0;
+    void select(Database db) override {
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+	    int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR*)"select * from subjects;", SQL_NTS);
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-1);
+            return;
+        }
+
         SQLCHAR col_name[256];
         SQLCHAR col_data[256];
         SQLSMALLINT col_name_length;
@@ -18,16 +24,25 @@ public:
         int rows = count_rows(db);
         if (rows < 0) {
             printf("Error count rows\n");
-            return -1;
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-2);
+            return;
         } else if (rows == 0) {
             printf("Table is empty\n");
-            return 0;
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(0);
+            return;
         }
 
         ret = SQLNumResultCols(db.get_hstmt(), &num_cols);
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-3);
+            return;
+        }
         for (int i = 1; i <= num_cols; i++) {
             ret = SQLColAttribute(db.get_hstmt(), i, SQL_DESC_NAME, col_name, sizeof(col_name), &col_name_length, NULL);
-            if (SQL_SUCCEEDED(ret)) {
+            if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO) {
                 cout << col_name << "\t";
             }
         }
@@ -40,12 +55,17 @@ public:
             SQLGetData(db.get_hstmt(), 2, SQL_C_CHAR, col_data, sizeof(col_data), NULL);
             cout << col_data << endl;
         }
-        return 1;
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        db.set_ret(0);
     }
 
-    int count_rows(Database db) {
-        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR*)"select count(*) from subjects", SQL_NTS);
+    int count_rows(Database db) { // +checking
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            return -1;
+        }
+        ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR*)"select count(*) from subjects", SQL_NTS);
         if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO) {
             ret = SQLFetch(db.get_hstmt());
             if (ret == SQL_SUCCESS || ret == SQL_SUCCESS_WITH_INFO) {
@@ -59,19 +79,100 @@ public:
         return -1;
     }
 
-    // int insert(Database db) override {
-        
-    // }
+    void insert(Database db) override {
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-1);
+            return;
+        }
+        const char* query = "insert into subjects (subject) values (?)";
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-2);
+            return;
+        }
+        SQLCHAR val1[256];
+        printf("Enter subject name:\n");
+        scanf("%255s", val1);
+        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, sizeof(val1), 0, val1, 0, NULL);
+        ret = SQLExecute(db.get_hstmt());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-3);
+            return;
+        }
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        db.set_ret(0);
+    }
 
-    // int update(Database db) override {
+    void update(Database db) override {
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-1);
+            return;
+        }
+        const char* query = "update subjects set subject = ? where subject = ?";
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-2);
+            return;
+        }
+        SQLCHAR old_val[256], new_val[256];
+        printf("Enter the name of the subject you want to change:\n");
+        scanf("%255s", old_val);
 
-    // }
+        // search of the value - checking
 
-    // int del(Database db) override {
+        printf("Enter new name:\n");
+        scanf("%255s", new_val);
+        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, sizeof(new_val), 0, new_val, 0, NULL);
+        SQLBindParameter(db.get_hstmt(), 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, sizeof(old_val), 0, old_val, 0, NULL);
+        ret = SQLExecute(db.get_hstmt());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-3);
+            return;
+        }
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        db.set_ret(0);
+    }
 
-    // }
+    void del(Database db) override {
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-1);
+            return;
+        }
+        const char *query = "delete from subjects where subject = ?";
+        char name[256];
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-2);
+            return;
+        }
+        printf("Enter subject for deletion:\n");
+        scanf("%255s", name);
 
-    // int find(Database db) {
+        // search of the value - checking
+
+        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, sizeof(name), 0, name, 0, NULL);
+        ret = SQLExecute(db.get_hstmt());
+        if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {
+            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+            db.set_ret(-3);
+            return;
+        }
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        db.set_ret(0);
+    }
+
+    //void search(Database db) override {
 
     //}
 };

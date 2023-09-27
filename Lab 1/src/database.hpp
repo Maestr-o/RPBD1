@@ -18,6 +18,7 @@ private:
     SQLRETURN   ret;
 public:
     Database();
+    
     SQLHENV get_henv();
     SQLHDBC get_hdbc();
     SQLHSTMT get_hstmt();
@@ -26,11 +27,12 @@ public:
     void set_henv(SQLHENV x);
     void set_hdbc(SQLHDBC x);
     void set_hstmt(SQLHSTMT x);
+    void set_ret(SQLRETURN x);
+
     int connect();
     int init_tables();
     void disconnect();
     int exec(const char *cmd);
-    int exec_cont(const char* cmd);
     int check_exec(int ret);
 };
 
