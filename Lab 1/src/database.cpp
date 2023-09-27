@@ -1,9 +1,7 @@
 #include "database.hpp"
 
 Database::Database() {
-    int ret = connect();
-    if (ret == 0) cout << "Connection successful" << endl;
-    else cout << "Connection error " << ret << endl;
+    ret = connect();
 }
 
 SQLHENV Database::get_henv() {
@@ -16,6 +14,14 @@ SQLHDBC Database::get_hdbc() {
 
 SQLHSTMT Database::get_hstmt() {
 	return hstmt;
+}
+
+SQLHSTMT* Database::get_hstmt_address() {
+	return &hstmt;
+}
+
+SQLRETURN Database::get_ret() {
+	return ret;
 }
 
 void Database::set_henv(SQLHENV x) {
@@ -31,15 +37,12 @@ void Database::set_hstmt(SQLHSTMT x) {
 }
 
 int Database::connect() {
-	SQLCHAR* dsn = (SQLCHAR*)"mydsn";
+	SQLCHAR* dsn = (SQLCHAR*)"psqldsn";
 	SQLCHAR* user = (SQLCHAR*)"us";
 	SQLCHAR* pass = (SQLCHAR*)"1234";
-	// Инициализация среды
     SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
     SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
-    // Создание соединения
     SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
-    // Установка параметров подключения
 	return SQLConnect(hdbc, dsn, SQL_NTS, user, SQL_NTS, pass, SQL_NTS);
 }
 
@@ -79,8 +82,8 @@ int Database::init_tables() {
 
 void Database::disconnect() {
 	SQLDisconnect(hdbc);
-	SQLFreeHandle(SQL_HANDLE_DBC, hdbc); // освобождение дескриптора соединения
-	SQLFreeHandle(SQL_HANDLE_ENV, henv); // освобождение окружения
+	SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
+	SQLFreeHandle(SQL_HANDLE_ENV, henv);
 }
 
 int Database::exec(const char* cmd) {

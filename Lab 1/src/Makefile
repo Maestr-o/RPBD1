@@ -1,7 +1,7 @@
 CC=g++
 FLAGS=-Wall -Wextra -Werror
-BUILD=../build/lab1
-LIBS=-lodbc
+BUILD=../build/lab1.exe
+LIBS=-lodbc32
 
 all: build
 
@@ -15,7 +15,7 @@ database.o: database.cpp
 	@$(CC) $(FLAGS) -c database.cpp -o database.o
 
 clean:
-	@rm -f *.o
+	@del *.o
 
 rebuild:
 	clean all

@@ -1,7 +1,6 @@
-#include "database.hpp"
-#include "mapper.hpp"
-#include "subject.hpp"
 #include <stdlib.h>
+#include "database.hpp"
+#include "subject_mapper.hpp"
 
 void run();
 void menu(Database *db);
@@ -13,41 +12,50 @@ int main() {
 
 void run() {
     Database db = Database();
-    printf("Init tables: %d\n", db.init_tables());
-    menu(&db);
+    if (db.get_ret() != 0) {
+        printf("Connection error: %d\n", db.get_ret());
+        return;
+    }
+    int con;
+    if ((con = db.init_tables()) == 0) {
+        menu(&db);
+    } else {
+        printf("Error: init table %d\n", con);
+    }
+    
 }
 
 void menu(Database *db) {
     int act = -1, tab;
     while (act != 0) {
-        cout << "Выберите действие:\n1. Вывести таблицу\n2. Добавить строку\n3. Удалить строку\n4. Обновить строку\n0. Выход\n";
+        cout << "Choose an action:\n1. View table\n2. Add data\n3. Delete data\n4. Find data\n5. Update data\n0. Exit\n";
         cin >> act;
         if (act == 0) {
             db->disconnect();
             break;
         }
-        system("clear");
-        cout << "Выберите отношение:\n1. Subjects\n";
+        system("cls");
+        cout << "Choose table:\n1. Subjects\n";
         cin >> tab;
         switch (tab) {
             case 1: {
-                Subject subject = Subject();
-                system("clear");
+                SubjectMapper subject_mapper;
+                system("cls");
                 switch (act) {
                     case 1: {
-                        subject.select(*db);
+                        subject_mapper.select(*db);
                         break;
                     }
                     default: {
                         system("clear");
-                        cout << "Введено неверное значение!" << endl;
+                        cout << "Input error" << endl;
                     }
                 }
                 break;
             }
             default: {
-                system("clear");
-                cout << "Введено неверное значение!" << endl;
+                system("cls");
+                cout << "Input error" << endl;
             }
         }
     }
