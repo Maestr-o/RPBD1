@@ -12,10 +12,10 @@ using namespace std;
 
 class Database {
 private:
-    SQLHENV     henv;
-    SQLHDBC     hdbc;
-    SQLHSTMT    hstmt;
-    SQLRETURN   ret;
+    SQLHENV henv;
+    SQLHDBC hdbc;
+    SQLHSTMT hstmt;
+    SQLRETURN ret;
 public:
     Database();
     
