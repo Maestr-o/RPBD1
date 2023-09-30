@@ -1,9 +1,14 @@
 #include "database.hpp"
 #include "subject_mapper.hpp"
 
+#define CHECK_INPUT_INDEX if (num < 1 || num > mapper->subjects.size()) {\
+                cout << "No such row" << endl;\
+                return;\
+            }
+
 void run();
 void act_menu(Database *db);
-void subjects_menu(Database *db, int act, SubjectMapper mapper);
+void subjects_menu(Database *db, int act, SubjectMapper *mapper);
 
 int main() {
     run();
@@ -40,7 +45,7 @@ void act_menu(Database *db) {
 
         switch (tab) {
             case 1:
-                subjects_menu(db, act, subject_mapper);
+                subjects_menu(db, act, &subject_mapper);
                 break;
             default:
                 cout << "Input error" << endl;
@@ -48,30 +53,69 @@ void act_menu(Database *db) {
     }
 }
 
-void subjects_menu(Database *db, int act, SubjectMapper mapper) {
+void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
     switch (act) {
         case 1: {
+            mapper->get_all();
             cout << "N\tSubject\n";
-            for (auto it = mapper.subjects.begin(); it != mapper.subjects.end(); it++)
-                cout << it->get_id() << "\t" << it->get_name() << endl;
+            unsigned int i = 1;
+            for (auto it = mapper->subjects.begin(); i <= mapper->subjects.size(); it++, i++)
+                cout << i << "\t" << it->get_name() << endl;
             break;
         }
         case 2: {
-            
+            Subject obj;
+            string name;
+            cout << "Enter subject: ";
+            cin >> name;
+            obj.set_name(name);
+            mapper->insert(*db, obj);
             if (db->get_ret() < 0)
-                printf("Error: %d\n", db->get_ret());
+                cout << "Error" << endl;
             break;
         }
         case 3: {
-            
+            Subject old_obj, new_obj;
+            unsigned int num, i = 1;
+            string new_name;
+            cout << "Enter number of row you need to update: ";
+            cin >> num;
+            CHECK_INPUT_INDEX
+
+            cout << "Enter new name of subject: ";
+            cin >> new_name;
+            for (auto it = mapper->subjects.begin(); i <= mapper->subjects.size(); it++, i++) {
+                if (i == num) {
+                    old_obj.set_name(it->get_name());
+                    old_obj.set_id(it->get_id());
+                    new_obj.set_id(it->get_id());
+                    new_obj.set_name(new_name);
+                    break;
+                }
+            }
+            mapper->update(*db, old_obj, new_obj);
             if (db->get_ret() < 0)
-                printf("Error: %d\n", db->get_ret());
+                cout << "Error" << endl;
             break;
         }
         case 4: {
-            
+            Subject obj;
+            unsigned int num, i = 1;
+            cout << "Enter number of row you need to delete: ";
+            cin >> num;
+            CHECK_INPUT_INDEX
+
+            cout << "Mapper size: " << mapper->subjects.size();
+            for (auto it = mapper->subjects.begin(); i <= mapper->subjects.size(); it++, i++) {
+                if (i == num) {
+                    obj.set_name(it->get_name());
+                    obj.set_id(it->get_id());
+                    mapper->del(*db, obj);
+                    break;
+                }
+            }
             if (db->get_ret() < 0)
-                printf("Error: %d\n", db->get_ret());
+                cout << "Error" << endl;
             break;
         }
         default: {
