@@ -8,6 +8,7 @@
         }
 
 #include <list>
+#include "database.hpp"
 #include "subject.hpp"
 
 using namespace std;
@@ -60,7 +61,6 @@ public:
 
         SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 
             sizeof(string_to_sqlchar(obj.get_name())), 0, string_to_sqlchar(obj.get_name()), 0, NULL);
-        cout << string_to_sqlchar(obj.get_name()); //
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         int index;
@@ -99,7 +99,8 @@ public:
         ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
         CHECK_LAST_OPERATION
         
-        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, sizeof(string_to_sqlchar(obj.get_name())), 0, string_to_sqlchar(obj.get_name()), 0, NULL);
+        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR, 
+            sizeof(string_to_sqlchar(obj.get_name())), 0, string_to_sqlchar(obj.get_name()), 0, NULL);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
 
