@@ -29,11 +29,11 @@ public:
 };
 
 ResExam::ResExam() {
-    id = NULL;
-    group_num = NULL;
-    auditory_id = NULL;
-    subject_id = NULL;
-    grade_id = NULL;
+    id = -1;
+    group_num = -1;
+    auditory_id = -1;
+    subject_id = -1;
+    grade_id = -1;
 }
 
 int ResExam::get_id() {

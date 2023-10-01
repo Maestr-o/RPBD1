@@ -37,10 +37,8 @@ public:
         cout << endl;
         for (int i = 1; SQLFetch(db.get_hstmt()) == SQL_SUCCESS; i++) {
             Auditory obj;
-            SQLColAttribute(db.get_hstmt(), 1, SQL_C_LONG, (SQLPOINTER)col_id, sizeof(col_id), NULL, NULL);
             SQLGetData(db.get_hstmt(), 1, SQL_C_LONG, &col_id, sizeof(col_id), NULL);
             obj.set_id(col_id);
-            SQLColAttribute(db.get_hstmt(), 2, SQL_C_LONG, (SQLPOINTER)col_aud, sizeof(col_aud), NULL, NULL);
             SQLGetData(db.get_hstmt(), 2, SQL_C_LONG, &col_aud, sizeof(col_aud), NULL);
             obj.set_auditory(col_aud);
             auditories.push_back(obj);

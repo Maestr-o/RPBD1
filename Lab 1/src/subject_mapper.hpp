@@ -28,10 +28,8 @@ public:
         int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR*)"select * from subjects;", SQL_NTS);
         CHECK_LAST_OPERATION
 
-        SQLCHAR col_name[256];
         SQLCHAR col_data[256];
         int col_id;
-        SQLSMALLINT col_name_length;
         SQLSMALLINT num_cols;
 
         ret = SQLNumResultCols(db.get_hstmt(), &num_cols);
@@ -40,10 +38,8 @@ public:
         cout << endl;
         for (int i = 1; SQLFetch(db.get_hstmt()) == SQL_SUCCESS; i++) {
             Subject obj;
-            SQLColAttribute(db.get_hstmt(), 1, SQL_C_LONG, (SQLPOINTER)col_id, sizeof(col_id), NULL, NULL);
             SQLGetData(db.get_hstmt(), 1, SQL_C_LONG, &col_id, sizeof(col_id), NULL);
             obj.set_id(col_id);
-            SQLColAttribute(db.get_hstmt(), 2, SQL_DESC_NAME, col_name, sizeof(col_name), &col_name_length, NULL);
             SQLGetData(db.get_hstmt(), 2, SQL_C_CHAR, col_data, sizeof(col_data), NULL);
             obj.set_name(sqlchar_to_string(col_data, strlen((char *)col_data)));
             subjects.push_back(obj);

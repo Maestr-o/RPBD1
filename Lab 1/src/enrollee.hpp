@@ -17,6 +17,7 @@ private:
     // include other objects
     Passport passport;
     Education education;
+    
 public:
     Enrollee();
 
@@ -24,11 +25,13 @@ public:
     string get_address();
     string get_parents_address();
     Passport get_passport();
+    Education get_education();
 
     void set_id(int x);
     void set_address(string x);
     void set_parents_address(string x);
     void set_passport(Passport x);
+    void set_education(Education x);
 
     bool operator==(const Enrollee& other);
 };
@@ -55,6 +58,10 @@ Passport Enrollee::get_passport() {
     return passport;
 }
 
+Education Enrollee::get_education() {
+    return education;
+}
+
 void Enrollee::set_id(int x) {
     id = x;
 }
@@ -69,6 +76,10 @@ void Enrollee::set_parents_address(string x) {
 
 void Enrollee::set_passport(Passport x) {
     passport = x;
+}
+
+void Enrollee::set_education(Education x) {
+    education = x;
 }
 
 bool Enrollee::operator==(const Enrollee& other) {

@@ -23,9 +23,9 @@ public:
 };
 
 ResDiploma::ResDiploma() {
-    id = NULL;
-    grade_id = NULL;
-    subject_id = NULL;
+    id = -1;
+    grade_id = -1;
+    subject_id = -1;
 }
 
 int ResDiploma::get_id() {

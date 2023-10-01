@@ -298,7 +298,43 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
-            
+            cout << "N\tFirst name\tLast name\tSurname\t\tSex\tCityzenship\tDate of birth\t" <<
+                "Passport\tAddress\tParents address\n";
+            unsigned int i = 1;
+            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
+                cout << i << "\t" << it->get_passport().get_first_name() << "\t\t" <<
+                    it->get_passport().get_last_name() << "\t\t" << it->get_passport().get_surname() <<
+                    "\t" << ((it->get_passport().get_sex()) ? "Man" : "Woman") << "\t" <<
+                    it->get_passport().get_cityzenship() << "\t\t" << it->get_passport().get_birth() <<
+                    "\t" << it->get_passport().get_pass_serial() << " " <<
+                    it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" <<
+                    it->get_parents_address() << endl; 
+            }
+            cout << "Show additional information?" << endl <<
+                "(0 - no, 1 - education, 2 - diploma results, 3 - exam results)" << endl;
+            int q = -1, num = -1;
+            cin >> q;
+            if (q == 0)
+                return;
+            cout << "Enter number of enrollee: ";
+            cin >> num;
+            switch (q) {
+                case 1: {
+                    
+                    break;
+                }
+                case 2: {
+
+                    break;
+                }
+                case 3: {
+
+                    break;
+                }
+                default:
+                    cout << "Input error" << endl;
+                    break;
+            }
             break;
         }
         case 2: {
