@@ -7,12 +7,21 @@ private:
     int id;
     int grade;
 public:
+    Grade();
+
     int get_id();
     int get_grade();
+
     void set_id(int x);
     void set_grade(int x);
+
     bool operator==(const Grade& other);
 };
+
+Grade::Grade() {
+    id = -1;
+    grade = -1;
+}
 
 int Grade::get_id() {
     return id;

@@ -2,12 +2,14 @@
 #include "subject_mapper.hpp"
 #include "grade_mapper.hpp"
 #include "auditory_mapper.hpp"
+#include "enrollee_mapper.hpp"
 
 void run();
 void act_menu(Database *db);
 void subjects_menu(Database *db, int act, SubjectMapper *mapper);
 void grades_menu(Database *db, int act, GradeMapper *mapper);
 void auditories_menu(Database *db, int act, AuditoryMapper *mapper);
+void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper);
 
 int main() {
     run();
@@ -32,6 +34,7 @@ void act_menu(Database *db) {
     SubjectMapper subject_mapper(db);
     GradeMapper grade_mapper(db);
     AuditoryMapper auditory_mapper(db);
+    EnrolleeMapper enrollee_mapper(db);
 
     while (act != 0) {
         cout << "Choose an action:\n1. View data\n2. Add data\n3. Update data\n4. Delete data\n0. Exit\n";
@@ -41,7 +44,7 @@ void act_menu(Database *db) {
             break;
         }
         int tab;
-        cout << "Choose entity:\n1. Subject\n2. Grade\n3. Auditory\n4. Student\n";
+        cout << "Choose entity:\n1. Subject\n2. Grade\n3. Auditory\n4. Enrollee\n";
         cin >> tab;
 
         switch (tab) {
@@ -55,6 +58,7 @@ void act_menu(Database *db) {
                 auditories_menu(db, act, &auditory_mapper);
                 break;
             case 4:
+                enrollee_menu(db, act, &enrollee_mapper);
                 break;
             default:
                 cout << "Input error" << endl;
@@ -280,6 +284,37 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
                     break;
                 }
             }
+            if (db->get_ret() < 0)
+                cout << "Error" << endl;
+            break;
+        }
+        default: {
+            cout << "Input error" << endl;
+        }
+    }
+}
+
+void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
+    switch (act) {
+        case 1: {
+            mapper->get_all();
+            
+            break;
+        }
+        case 2: {
+            
+            if (db->get_ret() < 0)
+                cout << "Error" << endl;
+            break;
+        }
+        case 3: {
+            
+            if (db->get_ret() < 0)
+                cout << "Error" << endl;
+            break;
+        }
+        case 4: {
+            
             if (db->get_ret() < 0)
                 cout << "Error" << endl;
             break;

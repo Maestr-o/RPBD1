@@ -2,17 +2,29 @@
 
 #define SUBJECT_HPP
 
+#include <iostream>
+using namespace std;
+
 class Subject {
 private:
     int id;
     string name;
 public:
+    Subject();
+
     int get_id();
     string get_name();
+
     void set_id(int x);
     void set_name(string x);
+
     bool operator==(const Subject& other);
 };
+
+Subject::Subject() {
+    id = -1;
+    name = "";
+}
 
 int Subject::get_id() {
     return id;
