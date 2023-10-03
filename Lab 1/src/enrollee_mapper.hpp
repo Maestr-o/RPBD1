@@ -138,13 +138,78 @@ public:
         applicants.push_back(obj);
     }
 
-    // void update(Database db, Enrollee old_obj, Enrollee new_obj) {
-        
-    // }
+    void update(Database db, Enrollee old_obj, Enrollee new_obj) {
+        del(db, old_obj);
 
-    // void del(Database db, Enrollee obj) {
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        CHECK_LAST_OPERATION
         
-    // }
+        char query[1000];
+        sprintf(query, "insert into enrollee(en_id, address, parents_address) values(%d, \'%s\', \'%s\');",
+            old_obj.get_id(), new_obj.get_address().c_str(), new_obj.get_parents_address().c_str());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+
+        ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        sprintf(query, "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
+            birth, pass_serial, pass_num) values(\
+            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);", old_obj.get_id(),
+            new_obj.get_passport().get_first_name().c_str(), new_obj.get_passport().get_last_name().c_str(),
+            new_obj.get_passport().get_surname().c_str(), new_obj.get_passport().get_sex(),
+            new_obj.get_passport().get_cityzenship().c_str(), new_obj.get_passport().get_birth().c_str(),
+            new_obj.get_passport().get_pass_serial(), new_obj.get_passport().get_pass_num());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+
+        ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        sprintf(query, "insert into education(en_id, faculty, speciality, university, year_of_ending,\
+            type_of_doc, doc_num, foreign_lang, gpa, ege) values(\
+            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', %d, \'%s\', %.2f, %d);",
+            old_obj.get_id(), new_obj.get_education().get_faculty().c_str(),
+            new_obj.get_education().get_speciality().c_str(),
+            new_obj.get_education().get_university().c_str(), new_obj.get_education().get_year_of_ending(),
+            new_obj.get_education().get_type_of_doc().c_str(), new_obj.get_education().get_doc_num(),
+            new_obj.get_education().get_foreign_lang().c_str(), new_obj.get_education().get_gpa(),
+            new_obj.get_education().get_ege());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        db.set_ret(0);
+    }
+
+    void del(Database db, Enrollee obj) {
+        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        CHECK_LAST_OPERATION
+        char query[1000];
+        sprintf(query, "delete from passport where en_id = %d;", obj.get_id());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        
+        ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        CHECK_LAST_OPERATION
+        sprintf(query, "delete from education where en_id = %d;", obj.get_id());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+
+        ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
+        CHECK_LAST_OPERATION
+        sprintf(query, "delete from enrollee where en_id = %d;", obj.get_id());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLExecute(db.get_hstmt());
+        CHECK_LAST_OPERATION
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        
+        applicants.remove(obj);
+        db.set_ret(0);
+    }
 
     string sqlchar_to_string(SQLCHAR* sqlchar_data, int data_size) {
         return string(reinterpret_cast<char*>(sqlchar_data), data_size);

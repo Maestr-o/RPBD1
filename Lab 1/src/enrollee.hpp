@@ -24,6 +24,8 @@ public:
     string get_parents_address();
     Passport get_passport();
     Education get_education();
+    Passport *get_link_passport();
+    Education *get_link_education();
 
     void set_id(int x);
     void set_address(string x);
@@ -50,6 +52,14 @@ string Enrollee::get_address() {
 
 string Enrollee::get_parents_address() {
     return parents_address;
+}
+
+Passport *Enrollee::get_link_passport() {
+    return &passport;
+}
+
+Education *Enrollee::get_link_education() {
+    return &education;
 }
 
 Passport Enrollee::get_passport() {

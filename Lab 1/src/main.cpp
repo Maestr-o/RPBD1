@@ -335,7 +335,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
             cout << "Enter cityzenship: ";
             cin >> str;
             passport.set_cityzenship(str);
-            cout << "Enter birth: "; // + checking
+            cout << "Enter birth: ";
             cin >> str;
             passport.set_birth(str);
             cout << "Enter pass serial: ";
@@ -387,13 +387,126 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
             break;
         }
         case 3: {
-            
+            Enrollee new_obj;
+            Passport passport;
+            Education education;
+            Enrollee old_obj;
+            unsigned int num = -1, i = 1;
+            string col;
+            cout << "Enter row number:" << endl;
+            cin >> num;
+            if (num < 1 || num > mapper->applicants.size()) {
+                cout << "No such row" << endl;
+                return;
+            }
+
+            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
+                if (i == num) {
+                    old_obj.set_id(it->get_id());
+                    old_obj.set_address(it->get_address());
+                    old_obj.set_parents_address(it->get_parents_address());
+                    old_obj.set_education(it->get_education());
+                    old_obj.set_passport(it->get_passport());
+                    
+                    new_obj.set_id(it->get_id());
+                    new_obj.set_address(it->get_address());
+                    new_obj.set_parents_address(it->get_parents_address());
+                    new_obj.set_education(it->get_education());
+                    new_obj.set_passport(it->get_passport());
+                }
+            }
+
+            cout << "Enter column: " << endl;
+            cin >> col;
+
+            cout << "Enter data: ";
+            string str;
+            int n;
+            float f;
+            if (col == "first_name") {
+                cin >> str;
+                new_obj.get_link_passport()->set_first_name(str);
+            } else if (col == "last_name") {
+                cin >> str;
+                new_obj.get_link_passport()->set_last_name(str);
+            } else if (col == "surname") {
+                cin >> str;
+                new_obj.get_link_passport()->set_surname(str);
+            } else if (col == "sex") {
+                cin >> n;
+                new_obj.get_link_passport()->set_sex(n);
+            } else if (col == "cityzenship") {
+                cin >> str;
+                new_obj.get_link_passport()->set_cityzenship(str);
+            } else if (col == "birth") {
+                cin >> str;
+                new_obj.get_link_passport()->set_birth(str);
+            } else if (col == "pass_serial") {
+                cin >> n;
+                new_obj.get_link_passport()->set_pass_serial(n);
+            } else if (col == "pass_num") {
+                cin >> n;
+                new_obj.get_link_passport()->set_pass_num(n);
+            } else if (col == "address") {
+                cin >> str;
+                new_obj.set_address(str);
+            } else if (col == "parents_address") {
+                cin >> str;
+                new_obj.set_parents_address(str);
+            } else if (col == "faculty") {
+                cin >> str;
+                new_obj.get_link_education()->set_faculty(str);
+            } else if (col == "speciality") {
+                cin >> str;
+                new_obj.get_link_education()->set_speciality(str);
+            } else if (col == "university") {
+                cin >> str;
+                new_obj.get_link_education()->set_university(str);
+            } else if (col == "year_of_ending") {
+                cin >> n;
+                new_obj.get_link_education()->set_year_of_ending(n);
+            } else if (col == "type_of_doc") {
+                cin >> str;
+                new_obj.get_link_education()->set_type_of_doc(str);
+            } else if (col == "doc_num") {
+                cin >> n;
+                new_obj.get_link_education()->set_doc_num(n);
+            } else if (col == "foreign_lang") {
+                cin >> str;
+                new_obj.get_link_education()->set_foreign_lang(str);
+            } else if (col == "gpa") {
+                cin >> f;
+                new_obj.get_link_education()->set_gpa(f);
+            } else if (col == "ege") {
+                cin >> n;
+                new_obj.get_link_education()->set_ege(n);
+            } else {
+                cout << "Input error" << endl;
+                return;
+            }
+
+            mapper->update(*db, old_obj, new_obj);
             if (db->get_ret() < 0)
                 cout << "Error" << endl;
             break;
         }
         case 4: {
-            
+            Enrollee obj;
+            unsigned int num, i = 1;
+            cout << "Enter row number: ";
+            cin >> num;
+
+            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
+                if (i == num) {
+                    obj.set_id(it->get_id());
+                    obj.set_address(it->get_address());
+                    obj.set_parents_address(it->get_parents_address());
+                    obj.set_education(it->get_education());
+                    obj.set_passport(it->get_passport());
+                }
+            }
+
+            mapper->del(*db, obj);
             if (db->get_ret() < 0)
                 cout << "Error" << endl;
             break;
