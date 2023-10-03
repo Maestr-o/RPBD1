@@ -310,35 +310,78 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
                     it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" <<
                     it->get_parents_address() << endl; 
             }
-            cout << "Show additional information?" << endl <<
-                "(0 - no, 1 - education, 2 - diploma results, 3 - exam results)" << endl;
-            int q = -1, num = -1;
-            cin >> q;
-            if (q == 0)
-                return;
-            cout << "Enter number of enrollee: ";
-            cin >> num;
-            switch (q) {
-                case 1: {
-                    
-                    break;
-                }
-                case 2: {
-
-                    break;
-                }
-                case 3: {
-
-                    break;
-                }
-                default:
-                    cout << "Input error" << endl;
-                    break;
-            }
             break;
         }
         case 2: {
-            
+            Enrollee enrollee;
+            Passport passport;
+            Education education;
+            string str;
+            int num;
+            float f;
+
+            cout << "Enter first name: ";
+            cin >> str;
+            passport.set_first_name(str);
+            cout << "Enter last name: ";
+            cin >> str;
+            passport.set_last_name(str);
+            cout << "Enter surname: ";
+            cin >> str;
+            passport.set_surname(str);
+            cout << "Enter sex: ";
+            cin >> num;
+            passport.set_sex(num);
+            cout << "Enter cityzenship: ";
+            cin >> str;
+            passport.set_cityzenship(str);
+            cout << "Enter birth: "; // + checking
+            cin >> str;
+            passport.set_birth(str);
+            cout << "Enter pass serial: ";
+            cin >> num;
+            passport.set_pass_serial(num);
+            cout << "Enter pass number: ";
+            cin >> num;
+            passport.set_pass_num(num);
+            cout << "Enter address: ";
+            cin >> str;
+            enrollee.set_address(str);
+            cout << "Enter parents address: ";
+            cin >> str;
+            enrollee.set_parents_address(str);
+            cout << "Enter faculty: ";
+            cin >> str;
+            education.set_faculty(str);
+            cout << "Enter speciality: ";
+            cin >> str;
+            education.set_speciality(str);
+            cout << "Enter university: ";
+            cin >> str;
+            education.set_university(str);
+            cout << "Enter year of ending: ";
+            cin >> num;
+            education.set_year_of_ending(num);
+            cout << "Enter type of document: ";
+            cin >> str;
+            education.set_type_of_doc(str);
+            cout << "Enter document number: ";
+            cin >> num;
+            education.set_doc_num(num);
+            cout << "Enter foreign language: ";
+            cin >> str;
+            education.set_faculty(str);
+            cout << "Enter GPA: ";
+            cin >> f;
+            education.set_gpa(f);
+            cout << "Enter EGE score: ";
+            cin >> num;
+            education.set_ege(num);
+
+            enrollee.set_education(education);
+            enrollee.set_passport(passport);
+            mapper->insert(*db, enrollee);
+
             if (db->get_ret() < 0)
                 cout << "Error" << endl;
             break;

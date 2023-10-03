@@ -11,7 +11,7 @@ private:
     string first_name;
     string last_name;
     string surname;
-    bool sex;
+    int sex;
     string cityzenship;
     string birth;
     int pass_serial;
@@ -23,7 +23,7 @@ public:
     string get_first_name();
     string get_last_name();
     string get_surname();
-    bool get_sex();
+    int get_sex();
     string get_cityzenship();
     string get_birth();
     int get_pass_serial();
@@ -33,7 +33,7 @@ public:
     void set_first_name(string x);
     void set_last_name(string x);
     void set_surname(string x);
-    void set_sex(bool x);
+    void set_sex(int x);
     void set_cityzenship(string x);
     void set_birth(string x);
     void set_pass_serial(int x);
@@ -45,7 +45,7 @@ Passport::Passport() {
     first_name = "";
     last_name = "";
     surname = "";
-    sex = NULL;
+    sex = -1;
     cityzenship = "";
     birth = "";
     pass_serial = -1;
@@ -68,7 +68,7 @@ string Passport::get_surname() {
     return surname;
 }
 
-bool Passport::get_sex() {
+int Passport::get_sex() {
     return sex;
 }
 
@@ -104,7 +104,7 @@ void Passport::set_surname(string x) {
     surname = x;
 }
 
-void Passport::set_sex(bool x) {
+void Passport::set_sex(int x) {
     sex = x;
 }
 

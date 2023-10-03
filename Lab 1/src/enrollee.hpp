@@ -3,7 +3,6 @@
 #define ENROLLEE_HPP
 
 #include <iostream>
-// include other objects
 #include "passport.hpp"
 #include "education.hpp"
 
@@ -14,7 +13,6 @@ private:
     int id;
     string address;
     string parents_address;
-    // include other objects
     Passport passport;
     Education education;
     

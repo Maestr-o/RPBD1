@@ -56,7 +56,7 @@ int Database::init_tables() {
 		alter table enrollee owner to us")))
 		return 1;
 	if (!check_exec(exec("create table if not exists passport(en_id integer references enrollee(en_id),\
-		first_name text, last_name text, surname text, sex bool, cityzenship text, birth date,\
+		first_name text, last_name text, surname text, sex integer, cityzenship text, birth date,\
 		pass_serial integer, pass_num integer);\
 		alter table passport owner to us")))
 		return 2;
