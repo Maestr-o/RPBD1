@@ -298,17 +298,43 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
-            cout << "N\tFirst name\tLast name\tSurname\t\tSex\tCityzenship\tDate of birth\t" <<
-                "Passport\tAddress\tParents address\n";
-            unsigned int i = 1;
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
-                cout << i << "\t" << it->get_passport().get_first_name() << "\t\t" <<
-                    it->get_passport().get_last_name() << "\t\t" << it->get_passport().get_surname() <<
-                    "\t" << ((it->get_passport().get_sex()) ? "Man" : "Woman") << "\t" <<
-                    it->get_passport().get_cityzenship() << "\t\t" << it->get_passport().get_birth() <<
-                    "\t" << it->get_passport().get_pass_serial() << " " <<
-                    it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" <<
-                    it->get_parents_address() << endl; 
+
+            cout << "What information should I show?\n1. General information about all applicants." <<
+                endl << "2. Grades in the diploma of a particular applicant." << endl;
+            int q;
+            cin >> q;
+            switch (q) {
+                case 1: {
+                    cout << "N\tFirst name\tLast name\tSurname\t\tSex\tCityzenship\tDate of birth\t" <<
+                    "Passport\tAddress\tParents address\n";
+                    unsigned int i = 1;
+                    for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
+                        cout << i << "\t" << it->get_passport().get_first_name() << "\t\t" <<
+                            it->get_passport().get_last_name() << "\t\t" << it->get_passport().get_surname() <<
+                            "\t" << ((it->get_passport().get_sex()) ? "Man" : "Woman") << "\t" <<
+                            it->get_passport().get_cityzenship() << "\t\t" << it->get_passport().get_birth() <<
+                            "\t" << it->get_passport().get_pass_serial() << " " <<
+                            it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" <<
+                            it->get_parents_address() << endl; 
+                    }
+                    break;
+                }
+                case 2: {
+                    unsigned int st;
+                    cout << "Enter number of student: ";
+                    cin >> st;
+                    cout << "N\tSubject\t\tGrade\n";
+                    unsigned int i = 1, j = 1;
+                    for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++) {
+                        if (i == st) {
+                            for (auto itst = it->get_diploma().begin(); j <= it->get_diploma().size(); itst++, j++) {
+                                cout << j << "\t" << itst->get_subject().get_name() << "\t" <<
+                                    itst->get_grade().get_grade() << endl;
+                            }
+                        }
+                    }
+                    break;
+                }
             }
             break;
         }

@@ -3,8 +3,10 @@
 #define ENROLLEE_HPP
 
 #include <iostream>
+#include <list>
 #include "passport.hpp"
 #include "education.hpp"
+#include "res_diploma.hpp"
 
 using namespace std;
 
@@ -15,7 +17,7 @@ private:
     string parents_address;
     Passport passport;
     Education education;
-    
+    list<ResDiploma> diploma;
 public:
     Enrollee();
 
@@ -24,6 +26,7 @@ public:
     string get_parents_address();
     Passport get_passport();
     Education get_education();
+    list<ResDiploma> get_diploma();
     Passport *get_link_passport();
     Education *get_link_education();
 
@@ -32,6 +35,7 @@ public:
     void set_parents_address(string x);
     void set_passport(Passport x);
     void set_education(Education x);
+    void set_diploma(list<ResDiploma> x);
 
     bool operator==(const Enrollee& other);
 };
@@ -52,6 +56,10 @@ string Enrollee::get_address() {
 
 string Enrollee::get_parents_address() {
     return parents_address;
+}
+
+list<ResDiploma> Enrollee::get_diploma() {
+    return diploma;
 }
 
 Passport *Enrollee::get_link_passport() {
@@ -88,6 +96,10 @@ void Enrollee::set_passport(Passport x) {
 
 void Enrollee::set_education(Education x) {
     education = x;
+}
+
+void Enrollee::set_diploma(list<ResDiploma> x) {
+    diploma = x;
 }
 
 bool Enrollee::operator==(const Enrollee& other) {

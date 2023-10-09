@@ -8,48 +8,48 @@ using namespace std;
 class ResDiploma {
 private:
     int id;
-    int grade_id;
-    int subject_id;
+    Grade grade;
+    Subject subject;
 public:
     ResDiploma();
 
     int get_id();
-    int get_grade_id();
-    int get_subject_id();
+    Grade get_grade();
+    Subject get_subject();
 
     void set_id(int x);
-    void set_grade_id(int x);
-    void set_subject_id(int x);
+    void set_grade(Grade x);
+    void set_subject(Subject x);
 };
 
 ResDiploma::ResDiploma() {
     id = -1;
-    grade_id = -1;
-    subject_id = -1;
+    grade = Grade();
+    subject = Subject();
 }
 
 int ResDiploma::get_id() {
     return id;
 }
 
-int ResDiploma::get_grade_id() {
-    return grade_id;
+Grade ResDiploma::get_grade() {
+    return grade;
 }
 
-int ResDiploma::get_subject_id() {
-    return subject_id;
+Subject ResDiploma::get_subject() {
+    return subject;
 }
 
 void ResDiploma::set_id(int x) {
     id = x;
 }
 
-void ResDiploma::set_grade_id(int x) {
-    grade_id = x;
+void ResDiploma::set_grade(Grade x) {
+    grade = x;
 }
 
-void ResDiploma::set_subject_id(int x) {
-    subject_id = x;
+void ResDiploma::set_subject(Subject x) {
+    subject = x;
 }
 
 #endif

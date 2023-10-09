@@ -7,10 +7,8 @@
             return;\
         }
 
-#include <list>
-#include "database.hpp"
-#include "education.hpp"
 #include "enrollee.hpp"
+#include "database.hpp"
 
 using namespace std;
 
@@ -85,10 +83,50 @@ public:
             education.set_gpa(int_data);
             enrollee.set_passport(passport);
             enrollee.set_education(education);
+            enrollee.set_diploma(get_res_diploma(enrollee.get_id()));
             applicants.push_back(enrollee);
         }
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
         db.set_ret(0);
+    }
+
+    list<ResDiploma> get_res_diploma(int id) {
+        list<ResDiploma> results;
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+
+        char query[256];
+        sprintf(query, "select grades.grade_id, grade, \
+            subjects.subject_id, subject from res_diploma, grades, subjects \
+            where res_diploma.grade_id=grades.grade_id and \
+            res_diploma.subject_id=subjects.subject_id and en_id=%d;", id);
+
+        SQLExecDirect(hstmt, (SQLCHAR*)query, SQL_NTS);
+
+        int data;
+        SQLCHAR str[256];
+
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
+            ResDiploma obj;
+            Grade grade;
+            Subject subject;
+            obj.set_id(id);
+            SQLGetData(hstmt, 1, SQL_C_LONG, &data, sizeof(data), NULL);
+            grade.set_id(data);
+            SQLGetData(hstmt, 2, SQL_C_LONG, &data, sizeof(data), NULL);
+            grade.set_grade(data);
+            SQLGetData(hstmt, 3, SQL_C_LONG, &data, sizeof(data), NULL);
+            subject.set_id(data);
+            SQLGetData(hstmt, 4, SQL_C_CHAR, str, sizeof(str), NULL);
+            subject.set_name(sqlchar_to_string(str, strlen((char *)str)));
+
+            obj.set_grade(grade);
+            obj.set_subject(subject);
+            results.push_back(obj);
+        }
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+        db.set_ret(0);
+        return results;
     }
 
     void insert(Database db, Enrollee obj) {

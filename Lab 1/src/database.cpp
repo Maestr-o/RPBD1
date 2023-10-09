@@ -73,27 +73,23 @@ int Database::init_tables() {
 		subject text not null);\
 		alter table subjects owner to us")))
 		return 5;
-	if (!check_exec(exec("create table if not exists res_diploma(res_dip_id serial primary key,\
+	if (!check_exec(exec("create table if not exists res_diploma(en_id integer references enrollee(en_id),\
 		grade_id integer references grades(grade_id), subject_id integer references subjects(subject_id));\
 		alter table res_diploma owner to us")))
 		return 6;
-	if (!check_exec(exec("create table if not exists edu_grades(en_id integer references enrollee(en_id),\
-		res_dip_id integer references res_diploma(res_dip_id));\
-		alter table edu_grades owner to us")))
-		return 7;
 	if (!check_exec(exec("create table if not exists auditories(auditory_id serial primary key,\
 		auditory integer not null);\
 		alter table auditories owner to us")))
-		return 8;
+		return 7;
 	if (!check_exec(exec("create table if not exists res_exam(res_exam_id serial primary key,\
 		group_num integer, auditory_id integer references auditories(auditory_id),\
 		subject_id integer references subjects(subject_id), grade_id integer references grades(grade_id));\
 		alter table res_exam owner to us")))
-		return 9;
+		return 8;
 	if (!check_exec(exec("create table if not exists exam_grades(en_id integer references enrollee(en_id),\
 		res_exam_id integer references res_exam(res_exam_id));\
 		alter table exam_grades owner to us")))
-		return 10;
+		return 9;
 	return 0;
 }
 
