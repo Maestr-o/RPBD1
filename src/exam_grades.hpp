@@ -5,10 +5,12 @@
 #include <iostream>
 using namespace std;
 
-class ExamGrades {
+class ExamGrades
+{
 private:
     int id;
     int res_exam_id;
+
 public:
     ExamGrades();
 
@@ -19,24 +21,29 @@ public:
     void set_res_exam_id(int x);
 };
 
-ExamGrades::ExamGrades() {
+ExamGrades::ExamGrades()
+{
     id = -1;
     res_exam_id = -1;
 }
 
-int ExamGrades::get_id() {
+int ExamGrades::get_id()
+{
     return id;
 }
 
-int ExamGrades::get_res_exam_id() {
+int ExamGrades::get_res_exam_id()
+{
     return res_exam_id;
 }
 
-void ExamGrades::set_id(int x) {
+void ExamGrades::set_id(int x)
+{
     id = x;
 }
 
-void ExamGrades::set_res_exam_id(int x) {
+void ExamGrades::set_res_exam_id(int x)
+{
     res_exam_id = x;
 }
 

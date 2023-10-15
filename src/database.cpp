@@ -1,56 +1,68 @@
 #include "database.hpp"
 
-Database::Database() {
-    ret = connect();
+Database::Database()
+{
+	ret = connect();
 }
 
-SQLHENV Database::get_henv() {
+SQLHENV Database::get_henv()
+{
 	return henv;
 }
 
-SQLHDBC Database::get_hdbc() {
+SQLHDBC Database::get_hdbc()
+{
 	return hdbc;
 }
 
-SQLHSTMT Database::get_hstmt() {
+SQLHSTMT Database::get_hstmt()
+{
 	return hstmt;
 }
 
-SQLHSTMT* Database::get_hstmt_address() {
+SQLHSTMT *Database::get_hstmt_address()
+{
 	return &hstmt;
 }
 
-SQLRETURN Database::get_ret() {
+SQLRETURN Database::get_ret()
+{
 	return ret;
 }
 
-void Database::set_henv(SQLHENV x) {
+void Database::set_henv(SQLHENV x)
+{
 	henv = x;
 }
 
-void Database::set_hdbc(SQLHDBC x) {
+void Database::set_hdbc(SQLHDBC x)
+{
 	hdbc = x;
 }
 
-void Database::set_hstmt(SQLHSTMT x) {
+void Database::set_hstmt(SQLHSTMT x)
+{
 	hstmt = x;
 }
 
-void Database::set_ret(SQLRETURN x) {
+void Database::set_ret(SQLRETURN x)
+{
 	ret = x;
 }
 
-int Database::connect() {
-	SQLCHAR* dsn = (SQLCHAR*)"psqldsn";
-	SQLCHAR* user = (SQLCHAR*)"us";
-	SQLCHAR* pass = (SQLCHAR*)"1234";
-    SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
-    SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
-    SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
+int Database::connect()
+{
+	SQLCHAR *dsn = (SQLCHAR *)"psqldsn";
+	SQLCHAR *user = (SQLCHAR *)"us";
+	SQLCHAR *pass = (SQLCHAR *)"1234";
+	SQLAllocHandle(SQL_HANDLE_ENV, SQL_NULL_HANDLE, &henv);
+	SQLSetEnvAttr(henv, SQL_ATTR_ODBC_VERSION, (SQLPOINTER)SQL_OV_ODBC3, SQL_IS_INTEGER);
+	SQLAllocHandle(SQL_HANDLE_DBC, henv, &hdbc);
 	return SQLConnect(hdbc, dsn, SQL_NTS, user, SQL_NTS, pass, SQL_NTS);
 }
 
-int Database::init_tables() {
+int Database::init_tables()
+{
 	if (!check_exec(exec("create table if not exists enrollee\
 		(en_id serial primary key, address text, parents_address text);\
 		alter table enrollee owner to us")))
@@ -93,21 +105,24 @@ int Database::init_tables() {
 	return 0;
 }
 
-void Database::disconnect() {
+void Database::disconnect()
+{
 	SQLDisconnect(hdbc);
 	SQLFreeHandle(SQL_HANDLE_DBC, hdbc);
 	SQLFreeHandle(SQL_HANDLE_ENV, henv);
 }
 
-int Database::exec(const char* cmd) {
+int Database::exec(const char *cmd)
+{
 	int ret;
 	SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
-	ret = SQLExecDirect(hstmt, (SQLCHAR*)cmd, SQL_NTS);
+	ret = SQLExecDirect(hstmt, (SQLCHAR *)cmd, SQL_NTS);
 	SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 	return ret;
 }
 
-int Database::check_exec(int ret) {
+int Database::check_exec(int ret)
+{
 	if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO)
 		return 0;
 	else

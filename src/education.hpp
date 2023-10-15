@@ -5,7 +5,8 @@
 #include <iostream>
 using namespace std;
 
-class Education {
+class Education
+{
 private:
     int id;
     string faculty;
@@ -17,6 +18,7 @@ private:
     string foreign_lang;
     float gpa;
     int ege;
+
 public:
     Education();
 
@@ -43,7 +45,8 @@ public:
     void set_ege(int x);
 };
 
-Education::Education() {
+Education::Education()
+{
     id = -1;
     faculty = "";
     speciality = "";
@@ -56,83 +59,103 @@ Education::Education() {
     ege = -1;
 }
 
-int Education::get_id() {
+int Education::get_id()
+{
     return id;
 }
 
-string Education::get_faculty() {
+string Education::get_faculty()
+{
     return faculty;
 }
 
-string Education::get_speciality() {
+string Education::get_speciality()
+{
     return speciality;
 }
 
-string Education::get_university() {
+string Education::get_university()
+{
     return university;
 }
 
-int Education::get_year_of_ending() {
+int Education::get_year_of_ending()
+{
     return year_of_ending;
 }
 
-string Education::get_type_of_doc() {
+string Education::get_type_of_doc()
+{
     return type_of_doc;
 }
 
-int Education::get_doc_num() {
+int Education::get_doc_num()
+{
     return doc_num;
 }
 
-string Education::get_foreign_lang() {
+string Education::get_foreign_lang()
+{
     return foreign_lang;
 }
 
-float Education::get_gpa() {
+float Education::get_gpa()
+{
     return gpa;
 }
 
-int Education::get_ege() {
+int Education::get_ege()
+{
     return ege;
 }
 
-void Education::set_id(int x) {
+void Education::set_id(int x)
+{
     id = x;
 }
 
-void Education::set_faculty(string x) {
+void Education::set_faculty(string x)
+{
     faculty = x;
 }
 
-void Education::set_speciality(string x) {
+void Education::set_speciality(string x)
+{
     speciality = x;
 }
 
-void Education::set_university(string x) {
+void Education::set_university(string x)
+{
     university = x;
 }
 
-void Education::set_year_of_ending(int x) {
+void Education::set_year_of_ending(int x)
+{
     year_of_ending = x;
 }
 
-void Education::set_type_of_doc(string x) {
+void Education::set_type_of_doc(string x)
+{
     type_of_doc = x;
 }
 
-void Education::set_doc_num(int x) {
+void Education::set_doc_num(int x)
+{
     doc_num = x;
 }
 
-void Education::set_foreign_lang(string x) {
+void Education::set_foreign_lang(string x)
+{
     foreign_lang = x;
 }
 
-void Education::set_gpa(float x) {
+void Education::set_gpa(float x)
+{
     gpa = x;
 }
 
-void Education::set_ege(int x) {
+void Education::set_ege(int x)
+{
     ege = x;
 }
 

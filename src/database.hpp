@@ -10,19 +10,21 @@
 
 using namespace std;
 
-class Database {
+class Database
+{
 private:
     SQLHENV henv;
     SQLHDBC hdbc;
     SQLHSTMT hstmt;
     SQLRETURN ret;
+
 public:
     Database();
-    
+
     SQLHENV get_henv();
     SQLHDBC get_hdbc();
     SQLHSTMT get_hstmt();
-    SQLHSTMT* get_hstmt_address();
+    SQLHSTMT *get_hstmt_address();
     SQLRETURN get_ret();
     void set_henv(SQLHENV x);
     void set_hdbc(SQLHDBC x);

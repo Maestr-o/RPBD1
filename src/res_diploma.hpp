@@ -5,11 +5,13 @@
 #include <iostream>
 using namespace std;
 
-class ResDiploma {
+class ResDiploma
+{
 private:
     int id;
     Grade grade;
     Subject subject;
+
 public:
     ResDiploma();
 
@@ -22,33 +24,40 @@ public:
     void set_subject(Subject x);
 };
 
-ResDiploma::ResDiploma() {
+ResDiploma::ResDiploma()
+{
     id = -1;
     grade = Grade();
     subject = Subject();
 }
 
-int ResDiploma::get_id() {
+int ResDiploma::get_id()
+{
     return id;
 }
 
-Grade ResDiploma::get_grade() {
+Grade ResDiploma::get_grade()
+{
     return grade;
 }
 
-Subject ResDiploma::get_subject() {
+Subject ResDiploma::get_subject()
+{
     return subject;
 }
 
-void ResDiploma::set_id(int x) {
+void ResDiploma::set_id(int x)
+{
     id = x;
 }
 
-void ResDiploma::set_grade(Grade x) {
+void ResDiploma::set_grade(Grade x)
+{
     grade = x;
 }
 
-void ResDiploma::set_subject(Subject x) {
+void ResDiploma::set_subject(Subject x)
+{
     subject = x;
 }
 

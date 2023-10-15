@@ -1,40 +1,46 @@
 #ifndef ENROLLEE_MAPPER_HPP
 
 #define ENROLLEE_MAPPER_HPP
-#define CHECK_LAST_OPERATION if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) {\
-            SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());\
-            db.set_ret(-1);\
-            return;\
-        }
+#define CHECK_LAST_OPERATION                                \
+    if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) \
+    {                                                       \
+        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());     \
+        db.set_ret(-1);                                     \
+        return;                                             \
+    }
 
 #include "enrollee.hpp"
 #include "database.hpp"
 
 using namespace std;
 
-class EnrolleeMapper {
+class EnrolleeMapper
+{
 public:
     Database db;
     list<Enrollee> applicants;
 
-    EnrolleeMapper(Database *d) {
+    EnrolleeMapper(Database *d)
+    {
         db = *d;
     }
 
-    void get_all() {
+    void get_all()
+    {
         applicants.clear();
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR*)"select enrollee.en_id, first_name, last_name, surname,\
+        int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR *)"select enrollee.en_id, first_name, last_name, surname,\
             sex, cityzenship, birth, pass_serial, pass_num, address, parents_address, faculty, speciality,\
             university, year_of_ending, type_of_doc, doc_num, foreign_lang, gpa, ege from enrollee,\
             passport, education where enrollee.en_id=passport.en_id and enrollee.en_id=education.en_id;",
-            SQL_NTS);
+                                SQL_NTS);
         CHECK_LAST_OPERATION
         SQLCHAR str_data[256];
         SQLINTEGER int_data;
         SQL_TIMESTAMP_STRUCT timestamp;
 
-        for (int i = 1; SQLFetch(db.get_hstmt()) == SQL_SUCCESS; i++) {
+        for (int i = 1; SQLFetch(db.get_hstmt()) == SQL_SUCCESS; i++)
+        {
             Enrollee enrollee;
             Passport passport;
             Education education;
@@ -90,7 +96,8 @@ public:
         db.set_ret(0);
     }
 
-    list<ResDiploma> get_res_diploma(int id) {
+    list<ResDiploma> get_res_diploma(int id)
+    {
         list<ResDiploma> results;
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
@@ -99,14 +106,16 @@ public:
         sprintf(query, "select grades.grade_id, grade, \
             subjects.subject_id, subject from res_diploma, grades, subjects \
             where res_diploma.grade_id=grades.grade_id and \
-            res_diploma.subject_id=subjects.subject_id and en_id=%d;", id);
+            res_diploma.subject_id=subjects.subject_id and en_id=%d;",
+                id);
 
-        SQLExecDirect(hstmt, (SQLCHAR*)query, SQL_NTS);
+        SQLExecDirect(hstmt, (SQLCHAR *)query, SQL_NTS);
 
         int data;
         SQLCHAR str[256];
 
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
+        {
             ResDiploma obj;
             Grade grade;
             Subject subject;
@@ -129,13 +138,14 @@ public:
         return results;
     }
 
-    void insert(Database db, Enrollee obj) {
+    void insert(Database db, Enrollee obj)
+    {
         int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         CHECK_LAST_OPERATION
         char query[1000];
         sprintf(query, "insert into enrollee(address, parents_address) values(\'%s\', \'%s\') returning en_id;",
-            obj.get_address().c_str(), obj.get_parents_address().c_str());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+                obj.get_address().c_str(), obj.get_parents_address().c_str());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         int index;
@@ -144,16 +154,17 @@ public:
         SQLGetData(db.get_hstmt(), 1, SQL_C_SLONG, &index, sizeof(index), NULL);
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        
+
         ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         sprintf(query, "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
             birth, pass_serial, pass_num) values(\
-            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);", index,
-            obj.get_passport().get_first_name().c_str(), obj.get_passport().get_last_name().c_str(),
-            obj.get_passport().get_surname().c_str(), obj.get_passport().get_sex(),
-            obj.get_passport().get_cityzenship().c_str(), obj.get_passport().get_birth().c_str(),
-            obj.get_passport().get_pass_serial(), obj.get_passport().get_pass_num());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);",
+                index,
+                obj.get_passport().get_first_name().c_str(), obj.get_passport().get_last_name().c_str(),
+                obj.get_passport().get_surname().c_str(), obj.get_passport().get_sex(),
+                obj.get_passport().get_cityzenship().c_str(), obj.get_passport().get_birth().c_str(),
+                obj.get_passport().get_pass_serial(), obj.get_passport().get_pass_num());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
@@ -162,13 +173,13 @@ public:
         sprintf(query, "insert into education(en_id, faculty, speciality, university, year_of_ending,\
             type_of_doc, doc_num, foreign_lang, gpa, ege) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', %d, \'%s\', %.2f, %d);",
-            index, obj.get_education().get_faculty().c_str(),
-            obj.get_education().get_speciality().c_str(),
-            obj.get_education().get_university().c_str(), obj.get_education().get_year_of_ending(),
-            obj.get_education().get_type_of_doc().c_str(), obj.get_education().get_doc_num(),
-            obj.get_education().get_foreign_lang().c_str(), obj.get_education().get_gpa(),
-            obj.get_education().get_ege());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+                index, obj.get_education().get_faculty().c_str(),
+                obj.get_education().get_speciality().c_str(),
+                obj.get_education().get_university().c_str(), obj.get_education().get_year_of_ending(),
+                obj.get_education().get_type_of_doc().c_str(), obj.get_education().get_doc_num(),
+                obj.get_education().get_foreign_lang().c_str(), obj.get_education().get_gpa(),
+                obj.get_education().get_ege());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
@@ -176,28 +187,30 @@ public:
         applicants.push_back(obj);
     }
 
-    void update(Database db, Enrollee old_obj, Enrollee new_obj) {
+    void update(Database db, Enrollee old_obj, Enrollee new_obj)
+    {
         del(db, old_obj);
 
         int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         CHECK_LAST_OPERATION
-        
+
         char query[1000];
         sprintf(query, "insert into enrollee(en_id, address, parents_address) values(%d, \'%s\', \'%s\');",
-            old_obj.get_id(), new_obj.get_address().c_str(), new_obj.get_parents_address().c_str());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+                old_obj.get_id(), new_obj.get_address().c_str(), new_obj.get_parents_address().c_str());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
 
         ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         sprintf(query, "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
             birth, pass_serial, pass_num) values(\
-            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);", old_obj.get_id(),
-            new_obj.get_passport().get_first_name().c_str(), new_obj.get_passport().get_last_name().c_str(),
-            new_obj.get_passport().get_surname().c_str(), new_obj.get_passport().get_sex(),
-            new_obj.get_passport().get_cityzenship().c_str(), new_obj.get_passport().get_birth().c_str(),
-            new_obj.get_passport().get_pass_serial(), new_obj.get_passport().get_pass_num());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+            %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);",
+                old_obj.get_id(),
+                new_obj.get_passport().get_first_name().c_str(), new_obj.get_passport().get_last_name().c_str(),
+                new_obj.get_passport().get_surname().c_str(), new_obj.get_passport().get_sex(),
+                new_obj.get_passport().get_cityzenship().c_str(), new_obj.get_passport().get_birth().c_str(),
+                new_obj.get_passport().get_pass_serial(), new_obj.get_passport().get_pass_num());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
@@ -206,33 +219,34 @@ public:
         sprintf(query, "insert into education(en_id, faculty, speciality, university, year_of_ending,\
             type_of_doc, doc_num, foreign_lang, gpa, ege) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', %d, \'%s\', %.2f, %d);",
-            old_obj.get_id(), new_obj.get_education().get_faculty().c_str(),
-            new_obj.get_education().get_speciality().c_str(),
-            new_obj.get_education().get_university().c_str(), new_obj.get_education().get_year_of_ending(),
-            new_obj.get_education().get_type_of_doc().c_str(), new_obj.get_education().get_doc_num(),
-            new_obj.get_education().get_foreign_lang().c_str(), new_obj.get_education().get_gpa(),
-            new_obj.get_education().get_ege());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)query, SQL_NTS);
+                old_obj.get_id(), new_obj.get_education().get_faculty().c_str(),
+                new_obj.get_education().get_speciality().c_str(),
+                new_obj.get_education().get_university().c_str(), new_obj.get_education().get_year_of_ending(),
+                new_obj.get_education().get_type_of_doc().c_str(), new_obj.get_education().get_doc_num(),
+                new_obj.get_education().get_foreign_lang().c_str(), new_obj.get_education().get_gpa(),
+                new_obj.get_education().get_ege());
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
         db.set_ret(0);
     }
 
-    void del(Database db, Enrollee obj) {
+    void del(Database db, Enrollee obj)
+    {
         int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         CHECK_LAST_OPERATION
         char query[1000];
         sprintf(query, "delete from passport where en_id = %d;", obj.get_id());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)(query), SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        
+
         ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         CHECK_LAST_OPERATION
         sprintf(query, "delete from education where en_id = %d;", obj.get_id());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)(query), SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
@@ -240,22 +254,24 @@ public:
         ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
         CHECK_LAST_OPERATION
         sprintf(query, "delete from enrollee where en_id = %d;", obj.get_id());
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR*)(query), SQL_NTS);
+        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)(query), SQL_NTS);
         ret = SQLExecute(db.get_hstmt());
         CHECK_LAST_OPERATION
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        
+
         applicants.remove(obj);
         db.set_ret(0);
     }
 
-    string sqlchar_to_string(SQLCHAR* sqlchar_data, int data_size) {
-        return string(reinterpret_cast<char*>(sqlchar_data), data_size);
+    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
+    {
+        return string(reinterpret_cast<char *>(sqlchar_data), data_size);
     }
 
-    SQLCHAR* string_to_sqlchar(const std::string& input) {
-        SQLCHAR* result = new SQLCHAR[input.size() + 1];
-        strcpy(reinterpret_cast<char*>(result), input.c_str());
+    SQLCHAR *string_to_sqlchar(const std::string &input)
+    {
+        SQLCHAR *result = new SQLCHAR[input.size() + 1];
+        strcpy(reinterpret_cast<char *>(result), input.c_str());
         return result;
     }
 };

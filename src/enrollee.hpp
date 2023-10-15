@@ -10,7 +10,8 @@
 
 using namespace std;
 
-class Enrollee {
+class Enrollee
+{
 private:
     int id;
     string address;
@@ -18,6 +19,7 @@ private:
     Passport passport;
     Education education;
     list<ResDiploma> diploma;
+
 public:
     Enrollee();
 
@@ -37,74 +39,90 @@ public:
     void set_education(Education x);
     void set_diploma(list<ResDiploma> x);
 
-    bool operator==(const Enrollee& other);
+    bool operator==(const Enrollee &other);
 };
 
-Enrollee::Enrollee() {
+Enrollee::Enrollee()
+{
     id = -1;
     address = "";
     parents_address = "";
 }
 
-int Enrollee::get_id() {
+int Enrollee::get_id()
+{
     return id;
 }
 
-string Enrollee::get_address() {
+string Enrollee::get_address()
+{
     return address;
 }
 
-string Enrollee::get_parents_address() {
+string Enrollee::get_parents_address()
+{
     return parents_address;
 }
 
-list<ResDiploma> Enrollee::get_diploma() {
+list<ResDiploma> Enrollee::get_diploma()
+{
     return diploma;
 }
 
-Passport *Enrollee::get_link_passport() {
+Passport *Enrollee::get_link_passport()
+{
     return &passport;
 }
 
-Education *Enrollee::get_link_education() {
+Education *Enrollee::get_link_education()
+{
     return &education;
 }
 
-Passport Enrollee::get_passport() {
+Passport Enrollee::get_passport()
+{
     return passport;
 }
 
-Education Enrollee::get_education() {
+Education Enrollee::get_education()
+{
     return education;
 }
 
-void Enrollee::set_id(int x) {
+void Enrollee::set_id(int x)
+{
     id = x;
 }
 
-void Enrollee::set_address(string x) {
+void Enrollee::set_address(string x)
+{
     address = x;
 }
 
-void Enrollee::set_parents_address(string x) {
+void Enrollee::set_parents_address(string x)
+{
     parents_address = x;
 }
 
-void Enrollee::set_passport(Passport x) {
+void Enrollee::set_passport(Passport x)
+{
     passport = x;
 }
 
-void Enrollee::set_education(Education x) {
+void Enrollee::set_education(Education x)
+{
     education = x;
 }
 
-void Enrollee::set_diploma(list<ResDiploma> x) {
+void Enrollee::set_diploma(list<ResDiploma> x)
+{
     diploma = x;
 }
 
-bool Enrollee::operator==(const Enrollee& other) {
-    return (this->address == other.address && this->parents_address == other.parents_address && 
-        this->id == other.id);
+bool Enrollee::operator==(const Enrollee &other)
+{
+    return (this->address == other.address && this->parents_address == other.parents_address &&
+            this->id == other.id);
 }
 
 #endif

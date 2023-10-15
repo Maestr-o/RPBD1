@@ -2,10 +2,12 @@
 
 #define AUDITORY_HPP
 
-class Auditory {
+class Auditory
+{
 private:
     int id;
     int auditory;
+
 public:
     Auditory();
 
@@ -15,31 +17,37 @@ public:
     void set_id(int x);
     void set_auditory(int x);
 
-    bool operator==(const Auditory& other);
+    bool operator==(const Auditory &other);
 };
 
-Auditory::Auditory() {
+Auditory::Auditory()
+{
     id = -1;
     auditory = -1;
 }
 
-int Auditory::get_id() {
+int Auditory::get_id()
+{
     return id;
 }
 
-int Auditory::get_auditory() {
+int Auditory::get_auditory()
+{
     return auditory;
 }
 
-void Auditory::set_id(int x) {
+void Auditory::set_id(int x)
+{
     id = x;
 }
 
-void Auditory::set_auditory(int x) {
+void Auditory::set_auditory(int x)
+{
     auditory = x;
 }
 
-bool Auditory::operator==(const Auditory& other) {
+bool Auditory::operator==(const Auditory &other)
+{
     return (this->auditory == other.auditory);
 }
 
