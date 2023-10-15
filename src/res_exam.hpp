@@ -10,33 +10,33 @@ class ResExam
 private:
     int id;
     int group_num;
-    int auditory_id;
-    int subject_id;
-    int grade_id;
+    Auditory auditory;
+    Subject subject;
+    Grade grade;
 
 public:
     ResExam();
 
     int get_id();
     int get_group_num();
-    int get_auditory_id();
-    int get_subject_id();
-    int get_grade_id();
+    Auditory get_auditory();
+    Subject get_subject();
+    Grade get_grade();
 
     void set_id(int x);
     void set_group_num(int x);
-    void set_auditory_id(int x);
-    void set_subject_id(int x);
-    void set_grade_id(int x);
+    void set_auditory(Auditory x);
+    void set_subject(Subject x);
+    void set_grade(Grade x);
 };
 
 ResExam::ResExam()
 {
     id = -1;
     group_num = -1;
-    auditory_id = -1;
-    subject_id = -1;
-    grade_id = -1;
+    subject = Subject();
+    grade = Grade();
+    auditory = Auditory();
 }
 
 int ResExam::get_id()
@@ -49,19 +49,19 @@ int ResExam::get_group_num()
     return group_num;
 }
 
-int ResExam::get_auditory_id()
+Auditory ResExam::get_auditory()
 {
-    return auditory_id;
+    return auditory;
 }
 
-int ResExam::get_subject_id()
+Subject ResExam::get_subject()
 {
-    return subject_id;
+    return subject;
 }
 
-int ResExam::get_grade_id()
+Grade ResExam::get_grade()
 {
-    return grade_id;
+    return grade;
 }
 
 void ResExam::set_id(int x)
@@ -74,19 +74,19 @@ void ResExam::set_group_num(int x)
     group_num = x;
 }
 
-void ResExam::set_auditory_id(int x)
+void ResExam::set_auditory(Auditory x)
 {
-    auditory_id = x;
+    auditory = x;
 }
 
-void ResExam::set_subject_id(int x)
+void ResExam::set_subject(Subject x)
 {
-    subject_id = x;
+    subject = x;
 }
 
-void ResExam::set_grade_id(int x)
+void ResExam::set_grade(Grade x)
 {
-    grade_id = x;
+    grade = x;
 }
 
 #endif

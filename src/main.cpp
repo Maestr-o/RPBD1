@@ -387,7 +387,21 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
         }
         case 3:
         {
-
+            unsigned int st;
+            cout << "Enter number of student: ";
+            cin >> st;
+            cout << "N\tGroup\tAuditory\tSubject\tGrade\n";
+            unsigned int i = 1, j = 1;
+            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
+            {
+                if (i == st)
+                {
+                    for (auto itst = it->get_exams().begin(); j <= it->get_exams().size(); itst++, j++)
+                    {
+                        cout << j << "\t" << itst->get_group_num() << "\t" << itst->get_auditory().get_auditory() << "\t" << itst->get_subject().get_name() << "\t" << itst->get_grade().get_grade() << endl;
+                    }
+                }
+            }
             break;
         }
         default:
