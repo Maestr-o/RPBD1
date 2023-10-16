@@ -22,6 +22,8 @@ public:
     void set_id(int x);
     void set_grade(Grade x);
     void set_subject(Subject x);
+
+    bool operator==(const ResDiploma &other);
 };
 
 ResDiploma::ResDiploma()
@@ -59,6 +61,11 @@ void ResDiploma::set_grade(Grade x)
 void ResDiploma::set_subject(Subject x)
 {
     subject = x;
+}
+
+bool ResDiploma::operator==(const ResDiploma &other)
+{
+    return ((this->id == other.id) && (this->subject == other.subject) && (this->grade == other.grade));
 }
 
 #endif
