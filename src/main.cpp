@@ -24,11 +24,6 @@ int main()
 void run()
 {
     Database db = Database();
-    if (db.get_ret() != 0)
-    {
-        cout << "Connection error: " << db.get_ret() << endl;
-        return;
-    }
     int con;
     if ((con = db.init_tables()) == 0)
         act_menu(&db);
@@ -106,8 +101,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper)
         cin >> name;
         obj.set_name(name);
         mapper->insert(*db, obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 3:
@@ -137,8 +131,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper)
             }
         }
         mapper->update(*db, old_obj, new_obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 4:
@@ -163,8 +156,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper)
                 break;
             }
         }
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     default:
@@ -195,8 +187,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper)
         cin >> grade;
         obj.set_grade(grade);
         mapper->insert(*db, obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 3:
@@ -226,8 +217,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper)
             }
         }
         mapper->update(*db, old_obj, new_obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 4:
@@ -252,8 +242,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper)
                 break;
             }
         }
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     default:
@@ -284,8 +273,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper)
         cin >> auditory;
         obj.set_auditory(auditory);
         mapper->insert(*db, obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 3:
@@ -315,8 +303,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper)
             }
         }
         mapper->update(*db, old_obj, new_obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 4:
@@ -341,8 +328,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper)
                 break;
             }
         }
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     default:
@@ -439,8 +425,6 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
         enrollee.set_passport(passport);
         mapper->insert(*db, enrollee);
 
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
         break;
     }
     case 3:
@@ -586,8 +570,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
         }
 
         mapper->update(*db, old_obj, new_obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     case 4:
@@ -610,8 +593,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
         }
 
         mapper->del(*db, obj);
-        if (db->get_ret() < 0)
-            cout << "Error" << endl;
+
         break;
     }
     default:
@@ -627,6 +609,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
     {
     case 1:
     {
+        enmapper->get_all();
         mapper->get_all();
         int st;
         cout << "Enter number of student: ";
@@ -645,9 +628,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
         for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
         {
             if (it->get_id() == st)
-            {
                 cout << i << "\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
-            }
         }
         break;
     }
@@ -679,6 +660,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
     {
     case 1:
     {
+        enmapper->get_all();
         mapper->get_all();
         int st;
         cout << "Enter number of student: ";
@@ -697,9 +679,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
         for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
         {
             if (it->get_id() == st)
-            {
                 cout << i << "\t" << it->get_group_num() << "\t" << it->get_auditory().get_auditory() << "\t\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
-            }
         }
         break;
     }

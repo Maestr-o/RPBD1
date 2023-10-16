@@ -1,13 +1,6 @@
 #ifndef DIPLOMA_MAPPER_HPP
 
 #define DIPLOMA_MAPPER_HPP
-#define CHECK_LAST_OPERATION                                \
-    if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) \
-    {                                                       \
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());     \
-        db.set_ret(-1);                                     \
-        return;                                             \
-    }
 
 #include <list>
 #include "res_diploma.hpp"
@@ -66,7 +59,6 @@ public:
             results.push_back(obj);
         }
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-        db.set_ret(0);
     }
 
     void insert(Database db, ResDiploma obj)

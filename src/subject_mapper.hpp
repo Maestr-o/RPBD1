@@ -1,13 +1,6 @@
 #ifndef SUBJECT_MAPPER_HPP
 
 #define SUBJECT_MAPPER_HPP
-#define CHECK_LAST_OPERATION                                \
-    if (ret != SQL_SUCCESS && ret != SQL_SUCCESS_WITH_INFO) \
-    {                                                       \
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());     \
-        db.set_ret(-1);                                     \
-        return;                                             \
-    }
 
 #include <list>
 #include "database.hpp"
@@ -28,90 +21,76 @@ public:
 
     void get_all()
     {
+        SQLHSTMT hstmt;
         subjects.clear();
-        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        int ret = SQLExecDirect(db.get_hstmt(), (SQLCHAR *)"select * from subjects;", SQL_NTS);
-        CHECK_LAST_OPERATION
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+        SQLExecDirect(hstmt, (SQLCHAR *)"select * from subjects;", SQL_NTS);
 
         SQLCHAR col_data[256];
         int col_id;
         SQLSMALLINT num_cols;
-
-        ret = SQLNumResultCols(db.get_hstmt(), &num_cols);
-        CHECK_LAST_OPERATION
-
+        SQLNumResultCols(hstmt, &num_cols);
         cout << endl;
-        for (int i = 1; SQLFetch(db.get_hstmt()) == SQL_SUCCESS; i++)
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
         {
             Subject obj;
-            SQLGetData(db.get_hstmt(), 1, SQL_C_LONG, &col_id, sizeof(col_id), NULL);
+            SQLGetData(hstmt, 1, SQL_C_LONG, &col_id, sizeof(col_id), NULL);
             obj.set_id(col_id);
-            SQLGetData(db.get_hstmt(), 2, SQL_C_CHAR, col_data, sizeof(col_data), NULL);
+            SQLGetData(hstmt, 2, SQL_C_CHAR, col_data, sizeof(col_data), NULL);
             obj.set_name(sqlchar_to_string(col_data, strlen((char *)col_data)));
             subjects.push_back(obj);
         }
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        db.set_ret(0);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
     void insert(Database db, Subject obj)
     {
-        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        CHECK_LAST_OPERATION
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+
         const char *query = "insert into subjects (subject) values (?) returning subject_id;";
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
-        CHECK_LAST_OPERATION
-
-        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
                          sizeof(string_to_sqlchar(obj.get_name())), 0, string_to_sqlchar(obj.get_name()), 0, NULL);
-        ret = SQLExecute(db.get_hstmt());
-        CHECK_LAST_OPERATION
-        int index;
-        ret = SQLFetch(db.get_hstmt());
-        CHECK_LAST_OPERATION
+        SQLExecute(hstmt);
 
-        SQLGetData(db.get_hstmt(), 1, SQL_C_SLONG, &index, sizeof(index), NULL);
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        db.set_ret(0);
+        int index;
+        SQLFetch(hstmt);
+        SQLGetData(hstmt, 1, SQL_C_SLONG, &index, sizeof(index), NULL);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
         obj.set_id(index);
+
         subjects.push_back(obj);
     }
 
     void update(Database db, Subject old_obj, Subject new_obj)
     {
-        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        CHECK_LAST_OPERATION
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+
         const char *query = "update subjects set subject = ? where subject = ?;";
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
-        CHECK_LAST_OPERATION
-
-        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
                          sizeof(string_to_sqlchar(new_obj.get_name())), 0, string_to_sqlchar(new_obj.get_name()), 0, NULL);
-        SQLBindParameter(db.get_hstmt(), 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
+        SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
                          sizeof(string_to_sqlchar(old_obj.get_name())), 0, string_to_sqlchar(old_obj.get_name()), 0, NULL);
-        ret = SQLExecute(db.get_hstmt());
-        CHECK_LAST_OPERATION
+        SQLExecute(hstmt);
 
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
-        db.set_ret(0);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
     void del(Database db, Subject obj)
     {
-        int ret = SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), db.get_hstmt_address());
-        CHECK_LAST_OPERATION
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "delete from subjects where subject = ?;";
-        ret = SQLPrepare(db.get_hstmt(), (SQLCHAR *)query, SQL_NTS);
-        CHECK_LAST_OPERATION
-
-        SQLBindParameter(db.get_hstmt(), 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
                          sizeof(string_to_sqlchar(obj.get_name())), 0, string_to_sqlchar(obj.get_name()), 0, NULL);
-        ret = SQLExecute(db.get_hstmt());
-        CHECK_LAST_OPERATION
+        SQLExecute(hstmt);
 
-        SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
         subjects.remove(obj);
-        db.set_ret(0);
     }
 
     string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
