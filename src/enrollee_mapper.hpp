@@ -35,7 +35,7 @@ public:
             passport, education where enrollee.en_id=passport.en_id and enrollee.en_id=education.en_id;",
                                 SQL_NTS);
         CHECK_LAST_OPERATION
-        SQLCHAR str_data[256];
+        SQLCHAR str_data[1000];
         SQLINTEGER int_data;
         SQL_TIMESTAMP_STRUCT timestamp;
 
@@ -91,105 +91,10 @@ public:
 
             enrollee.set_passport(passport);
             enrollee.set_education(education);
-            enrollee.set_diploma(get_res_diploma(enrollee.get_id()));
-            enrollee.set_exams(get_res_exams(enrollee.get_id()));
             applicants.push_back(enrollee);
         }
         SQLFreeHandle(SQL_HANDLE_STMT, db.get_hstmt());
         db.set_ret(0);
-    }
-
-    list<ResDiploma> get_res_diploma(int id)
-    {
-        list<ResDiploma> results;
-        SQLHSTMT hstmt;
-        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-
-        char query[256];
-        sprintf(query, "select grades.grade_id, grade, \
-            subjects.subject_id, subject from res_diploma, grades, subjects \
-            where res_diploma.grade_id=grades.grade_id and \
-            res_diploma.subject_id=subjects.subject_id and en_id=%d;",
-                id);
-
-        SQLExecDirect(hstmt, (SQLCHAR *)query, SQL_NTS);
-
-        int data;
-        SQLCHAR str[256];
-
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
-            ResDiploma obj;
-            Grade grade;
-            Subject subject;
-            obj.set_id(id);
-            SQLGetData(hstmt, 1, SQL_C_LONG, &data, sizeof(data), NULL);
-            grade.set_id(data);
-            SQLGetData(hstmt, 2, SQL_C_LONG, &data, sizeof(data), NULL);
-            grade.set_grade(data);
-            SQLGetData(hstmt, 3, SQL_C_LONG, &data, sizeof(data), NULL);
-            subject.set_id(data);
-            SQLGetData(hstmt, 4, SQL_C_CHAR, str, sizeof(str), NULL);
-            subject.set_name(sqlchar_to_string(str, strlen((char *)str)));
-
-            obj.set_grade(grade);
-            obj.set_subject(subject);
-            results.push_back(obj);
-        }
-        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-        db.set_ret(0);
-        return results;
-    }
-
-    list<ResExam> get_res_exams(int id)
-    {
-        list<ResExam> results;
-        SQLHSTMT hstmt;
-        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-
-        char query[256];
-        sprintf(query, "select group_num, auditories.auditory_id, auditory, grades.grade_id, grade, \
-            subjects.subject_id, subject from res_exam, grades, subjects, auditories where \
-            res_exam.grade_id=grades.grade_id and res_exam.subject_id=subjects.subject_id and \
-            res_exam.auditory_id=auditories.auditory_id and en_id=%d;",
-                id);
-
-        SQLExecDirect(hstmt, (SQLCHAR *)query, SQL_NTS); // error
-
-        int data;
-        SQLCHAR str[256];
-
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
-            ResExam obj;
-            Grade grade;
-            Subject subject;
-            Auditory auditory;
-            obj.set_id(id);
-
-            SQLGetData(hstmt, 1, SQL_C_LONG, &data, sizeof(data), NULL);
-            obj.set_group_num(data);
-            SQLGetData(hstmt, 2, SQL_C_LONG, &data, sizeof(data), NULL);
-            auditory.set_id(data);
-            SQLGetData(hstmt, 3, SQL_C_LONG, &data, sizeof(data), NULL);
-            auditory.set_auditory(data);
-            SQLGetData(hstmt, 4, SQL_C_LONG, &data, sizeof(data), NULL);
-            grade.set_id(data);
-            SQLGetData(hstmt, 5, SQL_C_LONG, &data, sizeof(data), NULL);
-            grade.set_grade(data);
-            SQLGetData(hstmt, 6, SQL_C_LONG, &data, sizeof(data), NULL);
-            subject.set_id(data);
-            SQLGetData(hstmt, 7, SQL_C_CHAR, str, sizeof(str), NULL);
-            subject.set_name(sqlchar_to_string(str, strlen((char *)str)));
-
-            obj.set_grade(grade);
-            obj.set_subject(subject);
-            obj.set_auditory(auditory);
-            results.push_back(obj);
-        }
-        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
-        db.set_ret(0);
-        return results;
     }
 
     void insert(Database db, Enrollee obj)

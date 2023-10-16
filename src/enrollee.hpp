@@ -6,8 +6,6 @@
 #include <list>
 #include "passport.hpp"
 #include "education.hpp"
-#include "res_diploma.hpp"
-#include "res_exam.hpp"
 
 using namespace std;
 
@@ -19,8 +17,6 @@ private:
     string parents_address;
     Passport passport;
     Education education;
-    list<ResDiploma> diploma;
-    list<ResExam> exams;
 
 public:
     Enrollee();
@@ -30,8 +26,6 @@ public:
     string get_parents_address();
     Passport get_passport();
     Education get_education();
-    list<ResDiploma> get_diploma();
-    list<ResExam> get_exams();
     Passport *get_link_passport();
     Education *get_link_education();
 
@@ -40,8 +34,6 @@ public:
     void set_parents_address(string x);
     void set_passport(Passport x);
     void set_education(Education x);
-    void set_diploma(list<ResDiploma> x);
-    void set_exams(list<ResExam> x);
 
     bool operator==(const Enrollee &other);
 };
@@ -66,16 +58,6 @@ string Enrollee::get_address()
 string Enrollee::get_parents_address()
 {
     return parents_address;
-}
-
-list<ResDiploma> Enrollee::get_diploma()
-{
-    return diploma;
-}
-
-list<ResExam> Enrollee::get_exams()
-{
-    return exams;
 }
 
 Passport *Enrollee::get_link_passport()
@@ -121,16 +103,6 @@ void Enrollee::set_passport(Passport x)
 void Enrollee::set_education(Education x)
 {
     education = x;
-}
-
-void Enrollee::set_diploma(list<ResDiploma> x)
-{
-    diploma = x;
-}
-
-void Enrollee::set_exams(list<ResExam> x)
-{
-    exams = x;
 }
 
 bool Enrollee::operator==(const Enrollee &other)

@@ -3,6 +3,8 @@
 #include "grade_mapper.hpp"
 #include "auditory_mapper.hpp"
 #include "enrollee_mapper.hpp"
+#include "diploma_mapper.hpp"
+#include "exam_mapper.hpp"
 
 void run();
 void act_menu(Database *db);
@@ -10,6 +12,8 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper);
 void grades_menu(Database *db, int act, GradeMapper *mapper);
 void auditories_menu(Database *db, int act, AuditoryMapper *mapper);
 void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper);
+void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper);
+void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper);
 
 int main()
 {
@@ -39,6 +43,8 @@ void act_menu(Database *db)
     GradeMapper grade_mapper(db);
     AuditoryMapper auditory_mapper(db);
     EnrolleeMapper enrollee_mapper(db);
+    DiplomaMapper diploma_mapper(db);
+    ExamMapper exam_mapper(db);
 
     while (act != 0)
     {
@@ -50,7 +56,7 @@ void act_menu(Database *db)
             break;
         }
         int tab;
-        cout << "Choose entity:\n1. Subject\n2. Grade\n3. Auditory\n4. Enrollee\n";
+        cout << "Choose entity:\n1. Subject\n2. Grade\n3. Auditory\n4. Enrollee\n5. Grades in the diploma\n6. Results of exam\n";
         cin >> tab;
 
         switch (tab)
@@ -66,6 +72,12 @@ void act_menu(Database *db)
             break;
         case 4:
             enrollee_menu(db, act, &enrollee_mapper);
+            break;
+        case 5:
+            diploma_menu(db, act, &diploma_mapper, &enrollee_mapper);
+            break;
+        case 6:
+            exam_menu(db, act, &exam_mapper, &enrollee_mapper);
             break;
         default:
             cout << "Input error" << endl;
@@ -347,389 +359,363 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
     case 1:
     {
         mapper->get_all();
-
-        cout << "What information should I show?\n1. General information about all applicants" << endl
-             << "2. Grades in the diploma of a particular applicant" << endl
-             << "3. Results of exams" << endl;
-        int q;
-        cin >> q;
-        switch (q)
+        cout << "N\tFirst name\tLast name\tSurname\t\tSex\tCityzenship\tDate of birth\t"
+             << "Passport\tAddress\tParents address\n";
+        unsigned int i = 1;
+        for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
         {
-        case 1:
-        {
-            cout << "N\tFirst name\tLast name\tSurname\t\tSex\tCityzenship\tDate of birth\t"
-                 << "Passport\tAddress\tParents address\n";
-            unsigned int i = 1;
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
-            {
-                cout << i << "\t" << it->get_passport().get_first_name() << "\t\t" << it->get_passport().get_last_name() << "\t\t" << it->get_passport().get_surname() << "\t" << ((it->get_passport().get_sex()) ? "Man" : "Woman") << "\t" << it->get_passport().get_cityzenship() << "\t\t" << it->get_passport().get_birth() << "\t" << it->get_passport().get_pass_serial() << " " << it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" << it->get_parents_address() << endl;
-            }
-            break;
-        }
-        case 2:
-        {
-            unsigned int st;
-            cout << "Enter number of student: ";
-            cin >> st;
-            cout << "N\tSubject\t\tGrade\n";
-            unsigned int i = 1, j = 1;
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
-            {
-                if (i == st)
-                {
-                    for (auto itst = it->get_diploma().begin(); j <= it->get_diploma().size(); itst++, j++)
-                    {
-                        cout << j << "\t" << itst->get_subject().get_name() << "\t" << itst->get_grade().get_grade() << endl;
-                    }
-                }
-            }
-            break;
-        }
-        case 3:
-        {
-            unsigned int st;
-            cout << "Enter number of student: ";
-            cin >> st;
-            cout << "N\tGroup\tAuditory\tSubject\tGrade\n";
-            unsigned int i = 1, j = 1;
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
-            {
-                if (i == st)
-                {
-                    for (auto itst = it->get_exams().begin(); j <= it->get_exams().size(); itst++, j++)
-                    {
-                        cout << j << "\t" << itst->get_group_num() << "\t" << itst->get_auditory().get_auditory() << "\t" << itst->get_subject().get_name() << "\t" << itst->get_grade().get_grade() << endl;
-                    }
-                }
-            }
-            break;
-        }
-        default:
-        {
-            cout << "Input error" << endl;
-        }
+            cout << i << "\t" << it->get_passport().get_first_name() << "\t\t" << it->get_passport().get_last_name() << "\t\t" << it->get_passport().get_surname() << "\t" << ((it->get_passport().get_sex()) ? "Man" : "Woman") << "\t" << it->get_passport().get_cityzenship() << "\t\t" << it->get_passport().get_birth() << "\t" << it->get_passport().get_pass_serial() << " " << it->get_passport().get_pass_num() << "\t" << it->get_address() << "\t" << it->get_parents_address() << endl;
         }
         break;
     }
     case 2:
     {
-        cout << "What do you want to add?" << endl
-             << "1. General information (new enrollee)" << endl
-             << "2. Grade in the diploma" << endl
-             << "3. Result of exam" << endl;
-        int q;
-        cin >> q;
-        switch (q)
-        {
-        case 1:
-        {
-            Enrollee enrollee;
-            Passport passport;
-            Education education;
-            string str;
-            int num;
-            float f;
+        Enrollee enrollee;
+        Passport passport;
+        Education education;
+        string str;
+        int num;
+        float f;
 
-            cout << "Enter first name: ";
-            cin >> str;
-            passport.set_first_name(str);
-            cout << "Enter last name: ";
-            cin >> str;
-            passport.set_last_name(str);
-            cout << "Enter surname: ";
-            cin >> str;
-            passport.set_surname(str);
-            cout << "Enter sex: ";
-            cin >> num;
-            passport.set_sex(num);
-            cout << "Enter cityzenship: ";
-            cin >> str;
-            passport.set_cityzenship(str);
-            cout << "Enter birth: ";
-            cin >> str;
-            passport.set_birth(str);
-            cout << "Enter pass serial: ";
-            cin >> num;
-            passport.set_pass_serial(num);
-            cout << "Enter pass number: ";
-            cin >> num;
-            passport.set_pass_num(num);
-            cout << "Enter address: ";
-            cin >> str;
-            enrollee.set_address(str);
-            cout << "Enter parents address: ";
-            cin >> str;
-            enrollee.set_parents_address(str);
-            cout << "Enter faculty: ";
-            cin >> str;
-            education.set_faculty(str);
-            cout << "Enter speciality: ";
-            cin >> str;
-            education.set_speciality(str);
-            cout << "Enter university: ";
-            cin >> str;
-            education.set_university(str);
-            cout << "Enter year of ending: ";
-            cin >> num;
-            education.set_year_of_ending(num);
-            cout << "Enter type of document: ";
-            cin >> str;
-            education.set_type_of_doc(str);
-            cout << "Enter document number: ";
-            cin >> num;
-            education.set_doc_num(num);
-            cout << "Enter foreign language: ";
-            cin >> str;
-            education.set_faculty(str);
-            cout << "Enter GPA: ";
-            cin >> f;
-            education.set_gpa(f);
-            cout << "Enter EGE score: ";
-            cin >> num;
-            education.set_ege(num);
+        cout << "Enter first name: ";
+        cin >> str;
+        passport.set_first_name(str);
+        cout << "Enter last name: ";
+        cin >> str;
+        passport.set_last_name(str);
+        cout << "Enter surname: ";
+        cin >> str;
+        passport.set_surname(str);
+        cout << "Enter sex: ";
+        cin >> num;
+        passport.set_sex(num);
+        cout << "Enter cityzenship: ";
+        cin >> str;
+        passport.set_cityzenship(str);
+        cout << "Enter birth: ";
+        cin >> str;
+        passport.set_birth(str);
+        cout << "Enter pass serial: ";
+        cin >> num;
+        passport.set_pass_serial(num);
+        cout << "Enter pass number: ";
+        cin >> num;
+        passport.set_pass_num(num);
+        cout << "Enter address: ";
+        cin >> str;
+        enrollee.set_address(str);
+        cout << "Enter parents address: ";
+        cin >> str;
+        enrollee.set_parents_address(str);
+        cout << "Enter faculty: ";
+        cin >> str;
+        education.set_faculty(str);
+        cout << "Enter speciality: ";
+        cin >> str;
+        education.set_speciality(str);
+        cout << "Enter university: ";
+        cin >> str;
+        education.set_university(str);
+        cout << "Enter year of ending: ";
+        cin >> num;
+        education.set_year_of_ending(num);
+        cout << "Enter type of document: ";
+        cin >> str;
+        education.set_type_of_doc(str);
+        cout << "Enter document number: ";
+        cin >> num;
+        education.set_doc_num(num);
+        cout << "Enter foreign language: ";
+        cin >> str;
+        education.set_faculty(str);
+        cout << "Enter GPA: ";
+        cin >> f;
+        education.set_gpa(f);
+        cout << "Enter EGE score: ";
+        cin >> num;
+        education.set_ege(num);
 
-            enrollee.set_education(education);
-            enrollee.set_passport(passport);
-            mapper->insert(*db, enrollee);
+        enrollee.set_education(education);
+        enrollee.set_passport(passport);
+        mapper->insert(*db, enrollee);
 
-            if (db->get_ret() < 0)
-                cout << "Error" << endl;
-            break;
-        }
-        case 2:
-        {
-            break;
-        }
-        case 3:
-        {
-            break;
-        }
-        default:
-        {
-            cout << "Input error" << endl;
-        }
-        }
+        if (db->get_ret() < 0)
+            cout << "Error" << endl;
         break;
     }
     case 3:
     {
-        cout << "What do you want to update?" << endl
-             << "1. General information" << endl
-             << "2. Grade in the diploma" << endl
-             << "3. Result of exam" << endl;
-        int q;
-        cin >> q;
-        switch (q)
+        Enrollee new_obj;
+        Passport passport;
+        Education education;
+        Enrollee old_obj;
+        unsigned int num = -1, i = 1;
+        string col;
+        cout << "Enter row number:" << endl;
+        cin >> num;
+        if (num < 1 || num > mapper->applicants.size())
         {
-        case 1:
-        {
-            Enrollee new_obj;
-            Passport passport;
-            Education education;
-            Enrollee old_obj;
-            unsigned int num = -1, i = 1;
-            string col;
-            cout << "Enter row number:" << endl;
-            cin >> num;
-            if (num < 1 || num > mapper->applicants.size())
-            {
-                cout << "No such row" << endl;
-                return;
-            }
-
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
-            {
-                if (i == num)
-                {
-                    old_obj.set_id(it->get_id());
-                    old_obj.set_address(it->get_address());
-                    old_obj.set_parents_address(it->get_parents_address());
-                    old_obj.set_education(it->get_education());
-                    old_obj.set_passport(it->get_passport());
-
-                    new_obj.set_id(it->get_id());
-                    new_obj.set_address(it->get_address());
-                    new_obj.set_parents_address(it->get_parents_address());
-                    new_obj.set_education(it->get_education());
-                    new_obj.set_passport(it->get_passport());
-                }
-            }
-
-            cout << "Enter column: " << endl;
-            cin >> col;
-
-            cout << "Enter data: ";
-            string str;
-            int n;
-            float f;
-            if (col == "first_name")
-            {
-                cin >> str;
-                new_obj.get_link_passport()->set_first_name(str);
-            }
-            else if (col == "last_name")
-            {
-                cin >> str;
-                new_obj.get_link_passport()->set_last_name(str);
-            }
-            else if (col == "surname")
-            {
-                cin >> str;
-                new_obj.get_link_passport()->set_surname(str);
-            }
-            else if (col == "sex")
-            {
-                cin >> n;
-                new_obj.get_link_passport()->set_sex(n);
-            }
-            else if (col == "cityzenship")
-            {
-                cin >> str;
-                new_obj.get_link_passport()->set_cityzenship(str);
-            }
-            else if (col == "birth")
-            {
-                cin >> str;
-                new_obj.get_link_passport()->set_birth(str);
-            }
-            else if (col == "pass_serial")
-            {
-                cin >> n;
-                new_obj.get_link_passport()->set_pass_serial(n);
-            }
-            else if (col == "pass_num")
-            {
-                cin >> n;
-                new_obj.get_link_passport()->set_pass_num(n);
-            }
-            else if (col == "address")
-            {
-                cin >> str;
-                new_obj.set_address(str);
-            }
-            else if (col == "parents_address")
-            {
-                cin >> str;
-                new_obj.set_parents_address(str);
-            }
-            else if (col == "faculty")
-            {
-                cin >> str;
-                new_obj.get_link_education()->set_faculty(str);
-            }
-            else if (col == "speciality")
-            {
-                cin >> str;
-                new_obj.get_link_education()->set_speciality(str);
-            }
-            else if (col == "university")
-            {
-                cin >> str;
-                new_obj.get_link_education()->set_university(str);
-            }
-            else if (col == "year_of_ending")
-            {
-                cin >> n;
-                new_obj.get_link_education()->set_year_of_ending(n);
-            }
-            else if (col == "type_of_doc")
-            {
-                cin >> str;
-                new_obj.get_link_education()->set_type_of_doc(str);
-            }
-            else if (col == "doc_num")
-            {
-                cin >> n;
-                new_obj.get_link_education()->set_doc_num(n);
-            }
-            else if (col == "foreign_lang")
-            {
-                cin >> str;
-                new_obj.get_link_education()->set_foreign_lang(str);
-            }
-            else if (col == "gpa")
-            {
-                cin >> f;
-                new_obj.get_link_education()->set_gpa(f);
-            }
-            else if (col == "ege")
-            {
-                cin >> n;
-                new_obj.get_link_education()->set_ege(n);
-            }
-            else
-            {
-                cout << "Input error" << endl;
-                return;
-            }
-
-            mapper->update(*db, old_obj, new_obj);
-            if (db->get_ret() < 0)
-                cout << "Error" << endl;
-            break;
+            cout << "No such row" << endl;
+            return;
         }
-        case 2:
+
+        for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
         {
-            break;
+            if (i == num)
+            {
+                old_obj.set_id(it->get_id());
+                old_obj.set_address(it->get_address());
+                old_obj.set_parents_address(it->get_parents_address());
+                old_obj.set_education(it->get_education());
+                old_obj.set_passport(it->get_passport());
+
+                new_obj.set_id(it->get_id());
+                new_obj.set_address(it->get_address());
+                new_obj.set_parents_address(it->get_parents_address());
+                new_obj.set_education(it->get_education());
+                new_obj.set_passport(it->get_passport());
+            }
         }
-        case 3:
+
+        cout << "Enter column: " << endl;
+        cin >> col;
+
+        cout << "Enter data: ";
+        string str;
+        int n;
+        float f;
+        if (col == "first_name")
         {
-            break;
+            cin >> str;
+            new_obj.get_link_passport()->set_first_name(str);
         }
-        default:
+        else if (col == "last_name")
+        {
+            cin >> str;
+            new_obj.get_link_passport()->set_last_name(str);
+        }
+        else if (col == "surname")
+        {
+            cin >> str;
+            new_obj.get_link_passport()->set_surname(str);
+        }
+        else if (col == "sex")
+        {
+            cin >> n;
+            new_obj.get_link_passport()->set_sex(n);
+        }
+        else if (col == "cityzenship")
+        {
+            cin >> str;
+            new_obj.get_link_passport()->set_cityzenship(str);
+        }
+        else if (col == "birth")
+        {
+            cin >> str;
+            new_obj.get_link_passport()->set_birth(str);
+        }
+        else if (col == "pass_serial")
+        {
+            cin >> n;
+            new_obj.get_link_passport()->set_pass_serial(n);
+        }
+        else if (col == "pass_num")
+        {
+            cin >> n;
+            new_obj.get_link_passport()->set_pass_num(n);
+        }
+        else if (col == "address")
+        {
+            cin >> str;
+            new_obj.set_address(str);
+        }
+        else if (col == "parents_address")
+        {
+            cin >> str;
+            new_obj.set_parents_address(str);
+        }
+        else if (col == "faculty")
+        {
+            cin >> str;
+            new_obj.get_link_education()->set_faculty(str);
+        }
+        else if (col == "speciality")
+        {
+            cin >> str;
+            new_obj.get_link_education()->set_speciality(str);
+        }
+        else if (col == "university")
+        {
+            cin >> str;
+            new_obj.get_link_education()->set_university(str);
+        }
+        else if (col == "year_of_ending")
+        {
+            cin >> n;
+            new_obj.get_link_education()->set_year_of_ending(n);
+        }
+        else if (col == "type_of_doc")
+        {
+            cin >> str;
+            new_obj.get_link_education()->set_type_of_doc(str);
+        }
+        else if (col == "doc_num")
+        {
+            cin >> n;
+            new_obj.get_link_education()->set_doc_num(n);
+        }
+        else if (col == "foreign_lang")
+        {
+            cin >> str;
+            new_obj.get_link_education()->set_foreign_lang(str);
+        }
+        else if (col == "gpa")
+        {
+            cin >> f;
+            new_obj.get_link_education()->set_gpa(f);
+        }
+        else if (col == "ege")
+        {
+            cin >> n;
+            new_obj.get_link_education()->set_ege(n);
+        }
+        else
         {
             cout << "Input error" << endl;
+            return;
         }
-        }
+
+        mapper->update(*db, old_obj, new_obj);
+        if (db->get_ret() < 0)
+            cout << "Error" << endl;
         break;
     }
     case 4:
     {
-        cout << "What do you want to delete?" << endl
-             << "1. All information" << endl
-             << "2. Grade in the diploma" << endl
-             << "3. Result of exam" << endl;
-        int q;
-        cin >> q;
-        switch (q)
-        {
-        case 1:
-        {
-            Enrollee obj;
-            unsigned int num, i = 1;
-            cout << "Enter row number: ";
-            cin >> num;
+        Enrollee obj;
+        unsigned int num, i = 1;
+        cout << "Enter row number: ";
+        cin >> num;
 
-            for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
+        for (auto it = mapper->applicants.begin(); i <= mapper->applicants.size(); it++, i++)
+        {
+            if (i == num)
             {
-                if (i == num)
-                {
-                    obj.set_id(it->get_id());
-                    obj.set_address(it->get_address());
-                    obj.set_parents_address(it->get_parents_address());
-                    obj.set_education(it->get_education());
-                    obj.set_passport(it->get_passport());
-                }
+                obj.set_id(it->get_id());
+                obj.set_address(it->get_address());
+                obj.set_parents_address(it->get_parents_address());
+                obj.set_education(it->get_education());
+                obj.set_passport(it->get_passport());
             }
+        }
 
-            mapper->del(*db, obj);
-            if (db->get_ret() < 0)
-                cout << "Error" << endl;
-            break;
-        }
-        case 2:
+        mapper->del(*db, obj);
+        if (db->get_ret() < 0)
+            cout << "Error" << endl;
+        break;
+    }
+    default:
+    {
+        cout << "Input error" << endl;
+    }
+    }
+}
+
+void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper)
+{
+    switch (act)
+    {
+    case 1:
+    {
+        mapper->get_all();
+        int st;
+        cout << "Enter number of student: ";
+        cin >> st;
+        cout << "N\tSubject\t\tGrade\n";
+        unsigned int i = 1;
+        for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
         {
-            break;
+            if (i == (unsigned int)st)
+            {
+                st = it->get_id();
+                break;
+            }
         }
-        case 3:
+        i = 1;
+        for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
         {
-            break;
+            if (it->get_id() == st)
+            {
+                cout << i << "\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
+            }
         }
-        default:
+        break;
+    }
+    case 2:
+    {
+
+        break;
+    }
+    case 3:
+    {
+
+        break;
+    }
+    case 4:
+    {
+
+        break;
+    }
+    default:
+    {
+        cout << "Input error" << endl;
+    }
+    }
+}
+
+void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper)
+{
+    switch (act)
+    {
+    case 1:
+    {
+        mapper->get_all();
+        int st;
+        cout << "Enter number of student: ";
+        cin >> st;
+        cout << "N\tGroup\tAuditory\tSubject\t\tGrade\n";
+        unsigned int i = 1;
+        for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
         {
-            cout << "Input error" << endl;
+            if (i == (unsigned int)st)
+            {
+                st = it->get_id();
+                break;
+            }
         }
+        i = 1;
+        for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
+        {
+            if (it->get_id() == st)
+            {
+                cout << i << "\t" << it->get_group_num() << "\t" << it->get_auditory().get_auditory() << "\t\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
+            }
         }
+        break;
+    }
+    case 2:
+    {
+
+        break;
+    }
+    case 3:
+    {
+
+        break;
+    }
+    case 4:
+    {
+
         break;
     }
     default:
