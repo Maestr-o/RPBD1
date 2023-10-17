@@ -18,6 +18,8 @@ public:
     int get_id();
     Grade get_grade();
     Subject get_subject();
+    Grade *get_link_grade();
+    Subject *get_link_subject();
 
     void set_id(int x);
     void set_grade(Grade x);
@@ -46,6 +48,16 @@ Grade ResDiploma::get_grade()
 Subject ResDiploma::get_subject()
 {
     return subject;
+}
+
+Grade *ResDiploma::get_link_grade()
+{
+    return &grade;
+}
+
+Subject *ResDiploma::get_link_subject()
+{
+    return &subject;
 }
 
 void ResDiploma::set_id(int x)

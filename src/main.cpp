@@ -13,7 +13,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper);
 void auditories_menu(Database *db, int act, AuditoryMapper *mapper);
 void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper);
 void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper, GradeMapper *grmapper);
-void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper);
+void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper, GradeMapper *grmapper, AuditoryMapper *audmapper);
 
 int main()
 {
@@ -72,7 +72,7 @@ void act_menu(Database *db)
             diploma_menu(db, act, &diploma_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper);
             break;
         case 6:
-            exam_menu(db, act, &exam_mapper, &enrollee_mapper);
+            exam_menu(db, act, &exam_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper, &auditory_mapper);
             break;
         default:
             cout << "Input error" << endl;
@@ -567,7 +567,6 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper)
         }
 
         mapper->update(*db, old_obj, new_obj);
-
         break;
     }
     case 4:
@@ -687,16 +686,97 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
     }
     case 3:
     {
+        ResDiploma new_obj;
+        ResDiploma old_obj;
+        unsigned int num = -1, i = 1;
+        int data;
+        string col;
 
+        cout << "Enter number of student: ";
+        cin >> data;
+        i = 1;
+        for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
+        {
+            if (i == (unsigned int)data)
+            {
+                old_obj.set_id(it->get_id());
+                break;
+            }
+        }
+
+        cout << "Enter row number:" << endl;
+        cin >> num;
+        if (num < 1 || num > mapper->results.size())
+        {
+            cout << "No such row" << endl;
+            return;
+        }
+
+        for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
+        {
+            if (i == num)
+            {
+                old_obj.set_id(it->get_id());
+                old_obj.set_grade(it->get_grade());
+                old_obj.set_subject(it->get_subject());
+
+                new_obj.set_id(it->get_id());
+                new_obj.set_grade(it->get_grade());
+                new_obj.set_subject(it->get_subject());
+            }
+        }
+
+        cout << "Enter column: ";
+        cin >> col;
+
+        string str;
+        int id;
+        cout << "Enter data: ";
+        if (col == "subject")
+        {
+            cin >> str;
+            for (auto it = submapper->subjects.begin(); i <= submapper->subjects.size(); it++, i++)
+            {
+                if (it->get_name() == str)
+                {
+                    data = it->get_id();
+                    break;
+                }
+            }
+            new_obj.get_link_subject()->set_id(data);
+            new_obj.get_link_subject()->set_name(str);
+        }
+        else if (col == "grade")
+        {
+            cin >> data;
+            for (auto it = grmapper->grades.begin(); i <= grmapper->grades.size(); it++, i++)
+            {
+                if (it->get_grade() == data)
+                {
+                    id = it->get_id();
+                    break;
+                }
+            }
+            new_obj.get_link_grade()->set_id(id);
+            new_obj.get_link_grade()->set_grade(data);
+        }
+        else
+        {
+            cout << "Input error" << endl;
+            return;
+        }
+
+        mapper->update(*db, old_obj, new_obj);
         break;
     }
     case 4:
     {
         ResDiploma obj;
-        unsigned int num, i = 1, st;
+        unsigned int num, i = 1;
+        int st;
         cout << "Enter number of student: ";
         cin >> st;
-        if (st < 1 || st > enmapper->applicants.size())
+        if (st < 1 || (unsigned int)st > enmapper->applicants.size())
         {
             cout << "No such row" << endl;
             return;
@@ -711,14 +791,14 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
 
         for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
         {
-            if (i == st)
+            if (i == (unsigned int)st)
             {
                 st = it->get_id();
                 break;
             }
         }
 
-        int j = 1;
+        unsigned int j = 1;
         for (auto it = mapper->results.begin(); i <= mapper->results.size() + 1; it++, i++) //+1 ?
         {
             if (it->get_id() == st && j == num)
@@ -741,7 +821,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
     }
 }
 
-void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper)
+void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper, GradeMapper *grmapper, AuditoryMapper *audmapper)
 {
     switch (act)
     {
@@ -763,16 +843,88 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
             }
         }
         i = 1;
+        int j = 1;
         for (auto it = mapper->results.begin(); i <= mapper->results.size(); it++, i++)
         {
             if (it->get_id() == st)
-                cout << i << "\t" << it->get_group_num() << "\t" << it->get_auditory().get_auditory() << "\t\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
+                cout << j++ << "\t" << it->get_group_num() << "\t" << it->get_auditory().get_auditory() << "\t\t" << it->get_subject().get_name() << "\t\t" << it->get_grade().get_grade() << endl;
         }
         break;
     }
     case 2:
     {
+        enmapper->get_all();
+        grmapper->get_all();
+        submapper->get_all();
+        audmapper->get_all();
+        ResExam obj;
+        Grade grade;
+        Subject subject;
+        Auditory auditory;
+        int data, id;
+        string str;
+        cout << "Enter number of student: ";
+        cin >> data;
+        unsigned int i = 1;
+        for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
+        {
+            if (i == (unsigned int)data)
+            {
+                obj.set_id(it->get_id());
+                break;
+            }
+        }
 
+        cout << "Enter group number:";
+        cin >> data;
+        obj.set_group_num(data);
+
+        i = 0;
+        cout << "Enter auditory: ";
+        cin >> data;
+        for (auto it = audmapper->auditories.begin(); i <= audmapper->auditories.size(); it++, i++)
+        {
+            if (it->get_auditory() == data)
+            {
+                id = it->get_id();
+                break;
+            }
+        }
+        auditory.set_auditory(data);
+        auditory.set_id(id);
+
+        i = 0;
+        cout << "Enter subject: ";
+        cin >> str;
+        for (auto it = submapper->subjects.begin(); i <= submapper->subjects.size(); it++, i++)
+        {
+            if (it->get_name() == str)
+            {
+                data = it->get_id();
+                break;
+            }
+        }
+        subject.set_id(data);
+        subject.set_name(str);
+
+        i = 0;
+        cout << "Enter grade: ";
+        cin >> data;
+        for (auto it = grmapper->grades.begin(); i <= grmapper->grades.size(); it++, i++)
+        {
+            if (it->get_grade() == data)
+            {
+                id = it->get_id();
+                break;
+            }
+        }
+        grade.set_id(id);
+        grade.set_grade(data);
+
+        obj.set_auditory(auditory);
+        obj.set_grade(grade);
+        obj.set_subject(subject);
+        mapper->insert(*db, obj);
         break;
     }
     case 3:
@@ -782,7 +934,49 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
     }
     case 4:
     {
+        ResExam obj;
+        unsigned int num, i = 1;
+        int st;
+        cout << "Enter number of student: ";
+        cin >> st;
+        if (st < 1 || (unsigned int)st > enmapper->applicants.size())
+        {
+            cout << "No such row" << endl;
+            return;
+        }
+        cout << "Enter number of row you need to delete: ";
+        cin >> num;
+        if (num < 1 || num > mapper->results.size())
+        {
+            cout << "No such row" << endl;
+            return;
+        }
 
+        for (auto it = enmapper->applicants.begin(); i <= enmapper->applicants.size(); it++, i++)
+        {
+            if (i == (unsigned int)st)
+            {
+                st = it->get_id();
+                break;
+            }
+        }
+
+        unsigned int j = 1;
+        for (auto it = mapper->results.begin(); i <= mapper->results.size() + 1; it++, i++) //+1 ?
+        {
+            if (it->get_id() == st && j == num)
+            {
+                obj.set_auditory(it->get_auditory());
+                obj.set_group_num(it->get_group_num());
+                obj.set_grade(it->get_grade());
+                obj.set_subject(it->get_subject());
+                obj.set_id(it->get_id());
+                mapper->del(*db, obj);
+                break;
+            }
+            if (it->get_id() == st)
+                j++;
+        }
         break;
     }
     default:

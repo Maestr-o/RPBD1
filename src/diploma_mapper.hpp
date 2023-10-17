@@ -78,6 +78,17 @@ public:
 
     void update(Database db, ResDiploma old_obj, ResDiploma new_obj)
     {
+        del(db, old_obj);
+
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+        char query[1000];
+        sprintf(query, "insert into res_diploma (en_id, grade_id, subject_id) values (%d, %d, %d);",
+                new_obj.get_id(), new_obj.get_grade().get_id(), new_obj.get_subject().get_id());
+        cout << query << endl;
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLExecute(hstmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
     void del(Database db, ResDiploma obj)
@@ -88,7 +99,6 @@ public:
         char query[1000];
         sprintf(query, "delete from res_diploma where en_id=%d and subject_id=%d and grade_id=%d;",
                 obj.get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
-
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);

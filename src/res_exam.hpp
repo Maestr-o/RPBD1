@@ -28,6 +28,8 @@ public:
     void set_auditory(Auditory x);
     void set_subject(Subject x);
     void set_grade(Grade x);
+
+    bool operator==(const ResExam &other);
 };
 
 ResExam::ResExam()
@@ -87,6 +89,11 @@ void ResExam::set_subject(Subject x)
 void ResExam::set_grade(Grade x)
 {
     grade = x;
+}
+
+bool ResExam::operator==(const ResExam &other)
+{
+    return ((this->id == other.id) && (this->subject == other.subject) && (this->grade == other.grade) && (this->auditory == other.auditory) && (this->group_num == other.group_num));
 }
 
 #endif

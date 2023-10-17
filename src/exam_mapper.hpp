@@ -72,6 +72,17 @@ public:
 
     void insert(Database db, ResExam obj)
     {
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+
+        char query[1000];
+        sprintf(query, "insert into res_exam values (%d, %d, %d, %d, %d);",
+                obj.get_id(), obj.get_group_num(), obj.get_auditory().get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLExecute(hstmt);
+
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+        results.push_back(obj);
     }
 
     void update(Database db, ResExam old_obj, ResExam new_obj)
@@ -80,6 +91,17 @@ public:
 
     void del(Database db, ResExam obj)
     {
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+
+        char query[1000];
+        sprintf(query, "delete from res_exam where en_id=%d and group_num=%d and auditory_id=%d and subject_id=%d and grade_id=%d;",
+                obj.get_id(), obj.get_group_num(), obj.get_auditory().get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLExecute(hstmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+
+        results.remove(obj);
     }
 
     string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
