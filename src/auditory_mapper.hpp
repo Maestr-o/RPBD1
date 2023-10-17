@@ -3,24 +3,22 @@
 #define AUDITORY_MAPPER_HPP
 
 #include <list>
-#include "database.hpp"
+
 #include "auditory.hpp"
+#include "database.hpp"
 
 using namespace std;
 
-class AuditoryMapper
-{
-public:
+class AuditoryMapper {
+   public:
     Database db;
     list<Auditory> auditories;
 
-    AuditoryMapper(Database *d)
-    {
+    AuditoryMapper(Database *d) {
         db = *d;
     }
 
-    void get_all()
-    {
+    void get_all() {
         auditories.clear();
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
@@ -30,8 +28,7 @@ public:
 
         SQLNumResultCols(hstmt, &num_cols);
         cout << endl;
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
             Auditory obj;
             SQLGetData(hstmt, 1, SQL_C_LONG, &col_id, sizeof(col_id), NULL);
             obj.set_id(col_id);
@@ -42,16 +39,15 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Auditory obj)
-    {
+    void insert(Database db, Auditory obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "insert into auditories (auditory) values (?) returning auditory_id;";
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
 
         int tmp = obj.get_auditory();
-        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,
-                         sizeof(int), 0, (SQLPOINTER)&tmp, 0, NULL);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(int), 0, (SQLPOINTER)&tmp,
+                         0, NULL);
         SQLExecute(hstmt);
 
         int index;
@@ -63,8 +59,7 @@ public:
         auditories.push_back(obj);
     }
 
-    void update(Database db, Auditory old_obj, Auditory new_obj)
-    {
+    void update(Database db, Auditory old_obj, Auditory new_obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "update auditories set auditory = ? where auditory = ?;";
@@ -72,25 +67,24 @@ public:
 
         int new_grade = new_obj.get_auditory();
         int old_grade = old_obj.get_auditory();
-        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,
-                         sizeof(int), 0, (SQLPOINTER)&new_grade, 0, NULL);
-        SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER,
-                         sizeof(int), 0, (SQLPOINTER)&old_grade, 0, NULL);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(int), 0,
+                         (SQLPOINTER)&new_grade, 0, NULL);
+        SQLBindParameter(hstmt, 2, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(int), 0,
+                         (SQLPOINTER)&old_grade, 0, NULL);
         SQLExecute(hstmt);
 
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Auditory obj)
-    {
+    void del(Database db, Auditory obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "delete from auditories where auditory = ?;";
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
 
         int tmp = obj.get_auditory();
-        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(int),
-                         0, (SQLPOINTER)&tmp, 0, NULL);
+        SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_LONG, SQL_INTEGER, sizeof(int), 0, (SQLPOINTER)&tmp,
+                         0, NULL);
         SQLExecute(hstmt);
 
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);

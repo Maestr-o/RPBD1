@@ -3,32 +3,31 @@
 #define DIPLOMA_MAPPER_HPP
 
 #include <list>
-#include "res_diploma.hpp"
-#include "grade.hpp"
-#include "subject.hpp"
+
 #include "database.hpp"
+#include "grade.hpp"
+#include "res_diploma.hpp"
+#include "subject.hpp"
 
 using namespace std;
 
-class DiplomaMapper
-{
-public:
+class DiplomaMapper {
+   public:
     Database db;
     list<ResDiploma> results;
 
-    DiplomaMapper(Database *d)
-    {
+    DiplomaMapper(Database *d) {
         db = *d;
     }
 
-    void get_all()
-    {
+    void get_all() {
         results.clear();
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
         char query[1000];
-        sprintf(query, "select en_id, grades.grade_id, grade, \
+        sprintf(query,
+                "select en_id, grades.grade_id, grade, \
             subjects.subject_id, subject from res_diploma, grades, subjects \
             where res_diploma.grade_id=grades.grade_id and \
             res_diploma.subject_id=subjects.subject_id;");
@@ -38,8 +37,7 @@ public:
         int data;
         SQLCHAR str[1000];
 
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
             ResDiploma obj;
             Grade grade;
             Subject subject;
@@ -61,8 +59,7 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, ResDiploma obj)
-    {
+    void insert(Database db, ResDiploma obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -76,8 +73,7 @@ public:
         results.push_back(obj);
     }
 
-    void update(Database db, ResDiploma old_obj, ResDiploma new_obj)
-    {
+    void update(Database db, ResDiploma old_obj, ResDiploma new_obj) {
         del(db, old_obj);
 
         SQLHSTMT hstmt;
@@ -85,14 +81,12 @@ public:
         char query[1000];
         sprintf(query, "insert into res_diploma (en_id, grade_id, subject_id) values (%d, %d, %d);",
                 new_obj.get_id(), new_obj.get_grade().get_id(), new_obj.get_subject().get_id());
-        cout << query << endl;
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, ResDiploma obj)
-    {
+    void del(Database db, ResDiploma obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -106,13 +100,11 @@ public:
         results.remove(obj);
     }
 
-    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
-    {
+    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size) {
         return string(reinterpret_cast<char *>(sqlchar_data), data_size);
     }
 
-    SQLCHAR *string_to_sqlchar(const std::string &input)
-    {
+    SQLCHAR *string_to_sqlchar(const std::string &input) {
         SQLCHAR *result = new SQLCHAR[input.size() + 1];
         strcpy(reinterpret_cast<char *>(result), input.c_str());
         return result;

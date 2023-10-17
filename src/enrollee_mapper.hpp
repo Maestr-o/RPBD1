@@ -2,24 +2,21 @@
 
 #define ENROLLEE_MAPPER_HPP
 
-#include "enrollee.hpp"
 #include "database.hpp"
+#include "enrollee.hpp"
 
 using namespace std;
 
-class EnrolleeMapper
-{
-public:
+class EnrolleeMapper {
+   public:
     Database db;
     list<Enrollee> applicants;
 
-    EnrolleeMapper(Database *d)
-    {
+    EnrolleeMapper(Database *d) {
         db = *d;
     }
 
-    void get_all()
-    {
+    void get_all() {
         SQLHSTMT hstmt;
         applicants.clear();
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
@@ -33,8 +30,7 @@ public:
         SQLINTEGER int_data;
         SQL_TIMESTAMP_STRUCT timestamp;
 
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
             Enrollee enrollee;
             Passport passport;
             Education education;
@@ -54,7 +50,8 @@ public:
             SQLGetData(hstmt, 6, SQL_C_CHAR, str_data, sizeof(str_data), NULL);
             passport.set_cityzenship(sqlchar_to_string(str_data, strlen((char *)str_data)));
             SQLGetData(hstmt, 7, SQL_C_TYPE_TIMESTAMP, &timestamp, sizeof(timestamp), NULL);
-            string date = to_string(timestamp.day) + "-" + to_string(timestamp.month) + "-" + to_string(timestamp.year);
+            string date =
+                to_string(timestamp.day) + "-" + to_string(timestamp.month) + "-" + to_string(timestamp.year);
             passport.set_birth(date);
             SQLGetData(hstmt, 8, SQL_C_LONG, &int_data, sizeof(int_data), NULL);
             passport.set_pass_serial(int_data);
@@ -90,13 +87,13 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Enrollee obj)
-    {
+    void insert(Database db, Enrollee obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
         char query[1000];
-        sprintf(query, "insert into enrollee(address, parents_address) values(\'%s\', \'%s\') returning en_id;",
+        sprintf(query,
+                "insert into enrollee(address, parents_address) values(\'%s\', \'%s\') returning en_id;",
                 obj.get_address().c_str(), obj.get_parents_address().c_str());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
@@ -107,29 +104,30 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-        sprintf(query, "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
+        sprintf(query,
+                "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
             birth, pass_serial, pass_num) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);",
-                index,
-                obj.get_passport().get_first_name().c_str(), obj.get_passport().get_last_name().c_str(),
-                obj.get_passport().get_surname().c_str(), obj.get_passport().get_sex(),
-                obj.get_passport().get_cityzenship().c_str(), obj.get_passport().get_birth().c_str(),
-                obj.get_passport().get_pass_serial(), obj.get_passport().get_pass_num());
+                index, obj.get_passport().get_first_name().c_str(),
+                obj.get_passport().get_last_name().c_str(), obj.get_passport().get_surname().c_str(),
+                obj.get_passport().get_sex(), obj.get_passport().get_cityzenship().c_str(),
+                obj.get_passport().get_birth().c_str(), obj.get_passport().get_pass_serial(),
+                obj.get_passport().get_pass_num());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
 
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-        sprintf(query, "insert into education(en_id, faculty, speciality, university, year_of_ending,\
+        sprintf(query,
+                "insert into education(en_id, faculty, speciality, university, year_of_ending,\
             type_of_doc, doc_num, foreign_lang, gpa, ege) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', %d, \'%s\', %.2f, %d);",
                 index, obj.get_education().get_faculty().c_str(),
-                obj.get_education().get_speciality().c_str(),
-                obj.get_education().get_university().c_str(), obj.get_education().get_year_of_ending(),
-                obj.get_education().get_type_of_doc().c_str(), obj.get_education().get_doc_num(),
-                obj.get_education().get_foreign_lang().c_str(), obj.get_education().get_gpa(),
-                obj.get_education().get_ege());
+                obj.get_education().get_speciality().c_str(), obj.get_education().get_university().c_str(),
+                obj.get_education().get_year_of_ending(), obj.get_education().get_type_of_doc().c_str(),
+                obj.get_education().get_doc_num(), obj.get_education().get_foreign_lang().c_str(),
+                obj.get_education().get_gpa(), obj.get_education().get_ege());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
 
@@ -137,8 +135,7 @@ public:
         applicants.push_back(obj);
     }
 
-    void update(Database db, Enrollee old_obj, Enrollee new_obj)
-    {
+    void update(Database db, Enrollee old_obj, Enrollee new_obj) {
         del(db, old_obj);
 
         SQLHSTMT hstmt;
@@ -150,26 +147,29 @@ public:
         SQLExecute(hstmt);
 
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-        sprintf(query, "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
+        sprintf(query,
+                "insert into passport(en_id, first_name, last_name, surname, sex, cityzenship,\
             birth, pass_serial, pass_num) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', \'%s\', %d, %d);",
-                old_obj.get_id(),
-                new_obj.get_passport().get_first_name().c_str(), new_obj.get_passport().get_last_name().c_str(),
-                new_obj.get_passport().get_surname().c_str(), new_obj.get_passport().get_sex(),
-                new_obj.get_passport().get_cityzenship().c_str(), new_obj.get_passport().get_birth().c_str(),
-                new_obj.get_passport().get_pass_serial(), new_obj.get_passport().get_pass_num());
+                old_obj.get_id(), new_obj.get_passport().get_first_name().c_str(),
+                new_obj.get_passport().get_last_name().c_str(), new_obj.get_passport().get_surname().c_str(),
+                new_obj.get_passport().get_sex(), new_obj.get_passport().get_cityzenship().c_str(),
+                new_obj.get_passport().get_birth().c_str(), new_obj.get_passport().get_pass_serial(),
+                new_obj.get_passport().get_pass_num());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
 
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
 
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
-        sprintf(query, "insert into education(en_id, faculty, speciality, university, year_of_ending,\
+        sprintf(query,
+                "insert into education(en_id, faculty, speciality, university, year_of_ending,\
             type_of_doc, doc_num, foreign_lang, gpa, ege) values(\
             %d, \'%s\', \'%s\', \'%s\', %d, \'%s\', %d, \'%s\', %.2f, %d);",
                 old_obj.get_id(), new_obj.get_education().get_faculty().c_str(),
                 new_obj.get_education().get_speciality().c_str(),
-                new_obj.get_education().get_university().c_str(), new_obj.get_education().get_year_of_ending(),
+                new_obj.get_education().get_university().c_str(),
+                new_obj.get_education().get_year_of_ending(),
                 new_obj.get_education().get_type_of_doc().c_str(), new_obj.get_education().get_doc_num(),
                 new_obj.get_education().get_foreign_lang().c_str(), new_obj.get_education().get_gpa(),
                 new_obj.get_education().get_ege());
@@ -178,8 +178,7 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Enrollee obj)
-    {
+    void del(Database db, Enrollee obj) {
         SQLHSTMT hstmt;
         char query[1000];
 
@@ -216,13 +215,11 @@ public:
         applicants.remove(obj);
     }
 
-    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
-    {
+    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size) {
         return string(reinterpret_cast<char *>(sqlchar_data), data_size);
     }
 
-    SQLCHAR *string_to_sqlchar(const std::string &input)
-    {
+    SQLCHAR *string_to_sqlchar(const std::string &input) {
         SQLCHAR *result = new SQLCHAR[input.size() + 1];
         strcpy(reinterpret_cast<char *>(result), input.c_str());
         return result;

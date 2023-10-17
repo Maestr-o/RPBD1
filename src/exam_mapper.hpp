@@ -3,33 +3,32 @@
 #define EXAM_MAPPER_HPP
 
 #include <list>
-#include "res_exam.hpp"
-#include "grade.hpp"
-#include "subject.hpp"
-#include "database.hpp"
+
 #include "auditory.hpp"
+#include "database.hpp"
+#include "grade.hpp"
+#include "res_exam.hpp"
+#include "subject.hpp"
 
 using namespace std;
 
-class ExamMapper
-{
-public:
+class ExamMapper {
+   public:
     Database db;
     list<ResExam> results;
 
-    ExamMapper(Database *d)
-    {
+    ExamMapper(Database *d) {
         db = *d;
     }
 
-    void get_all()
-    {
+    void get_all() {
         results.clear();
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
         char query[1000];
-        sprintf(query, "select en_id, group_num, auditories.auditory_id, auditory, grades.grade_id, grade, \
+        sprintf(query,
+                "select en_id, group_num, auditories.auditory_id, auditory, grades.grade_id, grade, \
             subjects.subject_id, subject from res_exam, grades, subjects, auditories where \
             res_exam.grade_id=grades.grade_id and res_exam.subject_id=subjects.subject_id and \
             res_exam.auditory_id=auditories.auditory_id;");
@@ -39,8 +38,7 @@ public:
         int data;
         SQLCHAR str[1000];
 
-        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++)
-        {
+        for (int i = 1; SQLFetch(hstmt) == SQL_SUCCESS; i++) {
             ResExam obj;
             Grade grade;
             Subject subject;
@@ -70,14 +68,13 @@ public:
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, ResExam obj)
-    {
+    void insert(Database db, ResExam obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
         char query[1000];
-        sprintf(query, "insert into res_exam values (%d, %d, %d, %d, %d);",
-                obj.get_id(), obj.get_group_num(), obj.get_auditory().get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
+        sprintf(query, "insert into res_exam values (%d, %d, %d, %d, %d);", obj.get_id(), obj.get_group_num(),
+                obj.get_auditory().get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
 
@@ -85,18 +82,31 @@ public:
         results.push_back(obj);
     }
 
-    void update(Database db, ResExam old_obj, ResExam new_obj)
-    {
+    void update(Database db, ResExam old_obj, ResExam new_obj) {
+        del(db, old_obj);
+
+        SQLHSTMT hstmt;
+        SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
+        char query[1000];
+        sprintf(query, "insert into res_exam values (%d, %d, %d, %d, %d);", new_obj.get_id(),
+                new_obj.get_group_num(), new_obj.get_auditory().get_id(), new_obj.get_subject().get_id(),
+                new_obj.get_grade().get_id());
+        cout << query << endl;
+        SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
+        SQLExecute(hstmt);
+        SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, ResExam obj)
-    {
+    void del(Database db, ResExam obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
         char query[1000];
-        sprintf(query, "delete from res_exam where en_id=%d and group_num=%d and auditory_id=%d and subject_id=%d and grade_id=%d;",
-                obj.get_id(), obj.get_group_num(), obj.get_auditory().get_id(), obj.get_subject().get_id(), obj.get_grade().get_id());
+        sprintf(query,
+                "delete from res_exam where en_id=%d and group_num=%d and auditory_id=%d and subject_id=%d "
+                "and grade_id=%d;",
+                obj.get_id(), obj.get_group_num(), obj.get_auditory().get_id(), obj.get_subject().get_id(),
+                obj.get_grade().get_id());
         SQLPrepare(hstmt, (SQLCHAR *)query, SQL_NTS);
         SQLExecute(hstmt);
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
@@ -104,13 +114,11 @@ public:
         results.remove(obj);
     }
 
-    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size)
-    {
+    string sqlchar_to_string(SQLCHAR *sqlchar_data, int data_size) {
         return string(reinterpret_cast<char *>(sqlchar_data), data_size);
     }
 
-    SQLCHAR *string_to_sqlchar(const std::string &input)
-    {
+    SQLCHAR *string_to_sqlchar(const std::string &input) {
         SQLCHAR *result = new SQLCHAR[input.size() + 1];
         strcpy(reinterpret_cast<char *>(result), input.c_str());
         return result;

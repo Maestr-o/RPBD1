@@ -4,21 +4,21 @@
 
 #include <iostream>
 #include <list>
-#include "passport.hpp"
+
 #include "education.hpp"
+#include "passport.hpp"
 
 using namespace std;
 
-class Enrollee
-{
-private:
+class Enrollee {
+   private:
     int id;
     string address;
     string parents_address;
     Passport passport;
     Education education;
 
-public:
+   public:
     Enrollee();
 
     int get_id();
@@ -38,75 +38,61 @@ public:
     bool operator==(const Enrollee &other);
 };
 
-Enrollee::Enrollee()
-{
+Enrollee::Enrollee() {
     id = -1;
     address = "";
     parents_address = "";
 }
 
-int Enrollee::get_id()
-{
+int Enrollee::get_id() {
     return id;
 }
 
-string Enrollee::get_address()
-{
+string Enrollee::get_address() {
     return address;
 }
 
-string Enrollee::get_parents_address()
-{
+string Enrollee::get_parents_address() {
     return parents_address;
 }
 
-Passport *Enrollee::get_link_passport()
-{
+Passport *Enrollee::get_link_passport() {
     return &passport;
 }
 
-Education *Enrollee::get_link_education()
-{
+Education *Enrollee::get_link_education() {
     return &education;
 }
 
-Passport Enrollee::get_passport()
-{
+Passport Enrollee::get_passport() {
     return passport;
 }
 
-Education Enrollee::get_education()
-{
+Education Enrollee::get_education() {
     return education;
 }
 
-void Enrollee::set_id(int x)
-{
+void Enrollee::set_id(int x) {
     id = x;
 }
 
-void Enrollee::set_address(string x)
-{
+void Enrollee::set_address(string x) {
     address = x;
 }
 
-void Enrollee::set_parents_address(string x)
-{
+void Enrollee::set_parents_address(string x) {
     parents_address = x;
 }
 
-void Enrollee::set_passport(Passport x)
-{
+void Enrollee::set_passport(Passport x) {
     passport = x;
 }
 
-void Enrollee::set_education(Education x)
-{
+void Enrollee::set_education(Education x) {
     education = x;
 }
 
-bool Enrollee::operator==(const Enrollee &other)
-{
+bool Enrollee::operator==(const Enrollee &other) {
     return (this->address == other.address && this->parents_address == other.parents_address &&
             this->id == other.id);
 }
