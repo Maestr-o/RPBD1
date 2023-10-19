@@ -4,8 +4,8 @@
 
 #include <list>
 
-#include "auditory.hpp"
 #include "database.hpp"
+#include "auditory.hpp"
 
 using namespace std;
 

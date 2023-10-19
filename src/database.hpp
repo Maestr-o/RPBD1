@@ -1,11 +1,10 @@
 #ifndef DATABASE_HPP
 
+#include <iostream>
+#include <windows.h>
 #include <odbcinst.h>
 #include <sqlext.h>
 #include <string.h>
-#include <windows.h>
-
-#include <iostream>
 
 #define DATABASE_HPP
 

@@ -3,6 +3,8 @@
 #define RES_DIPLOMA_HPP
 
 #include <iostream>
+#include "grade.hpp"
+#include "subject.hpp"
 using namespace std;
 
 class ResDiploma {

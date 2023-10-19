@@ -4,11 +4,11 @@
 
 #include <list>
 
-#include "auditory.hpp"
-#include "database.hpp"
-#include "grade.hpp"
 #include "res_exam.hpp"
+#include "grade.hpp"
 #include "subject.hpp"
+#include "database.hpp"
+#include "auditory.hpp"
 
 using namespace std;
 

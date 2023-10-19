@@ -3,6 +3,10 @@
 #define RES_EXAM_HPP
 
 #include <iostream>
+#include "auditory.hpp"
+#include "subject.hpp"
+#include "grade.hpp"
+
 using namespace std;
 
 class ResExam {

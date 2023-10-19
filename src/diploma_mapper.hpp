@@ -4,10 +4,10 @@
 
 #include <list>
 
-#include "database.hpp"
-#include "grade.hpp"
 #include "res_diploma.hpp"
+#include "grade.hpp"
 #include "subject.hpp"
+#include "database.hpp"
 
 using namespace std;
 

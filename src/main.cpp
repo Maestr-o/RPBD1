@@ -1,5 +1,5 @@
-#include "auditory_mapper.hpp"
 #include "database.hpp"
+#include "auditory_mapper.hpp"
 #include "diploma_mapper.hpp"
 #include "enrollee_mapper.hpp"
 #include "exam_mapper.hpp"

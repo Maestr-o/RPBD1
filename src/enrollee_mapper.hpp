@@ -2,8 +2,8 @@
 
 #define ENROLLEE_MAPPER_HPP
 
-#include "database.hpp"
 #include "enrollee.hpp"
+#include "database.hpp"
 
 using namespace std;
 
