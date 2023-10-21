@@ -39,7 +39,7 @@ class AuditoryMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Auditory obj) {
+    void insert(Auditory obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "insert into auditories (auditory) values (?) returning auditory_id;";
@@ -59,7 +59,7 @@ class AuditoryMapper {
         auditories.push_back(obj);
     }
 
-    void update(Database db, Auditory old_obj, Auditory new_obj) {
+    void update(Auditory old_obj, Auditory new_obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "update auditories set auditory = ? where auditory = ?;";
@@ -76,7 +76,7 @@ class AuditoryMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Auditory obj) {
+    void del(Auditory obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "delete from auditories where auditory = ?;";

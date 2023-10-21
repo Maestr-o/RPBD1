@@ -59,7 +59,7 @@ class DiplomaMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, ResDiploma obj) {
+    void insert(ResDiploma obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -73,8 +73,8 @@ class DiplomaMapper {
         results.push_back(obj);
     }
 
-    void update(Database db, ResDiploma old_obj, ResDiploma new_obj) {
-        del(db, old_obj);
+    void update(ResDiploma old_obj, ResDiploma new_obj) {
+        del(old_obj);
 
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
@@ -86,7 +86,7 @@ class DiplomaMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, ResDiploma obj) {
+    void del(ResDiploma obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 

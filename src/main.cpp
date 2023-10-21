@@ -8,13 +8,13 @@
 
 void run();
 void act_menu(Database *db);
-void subjects_menu(Database *db, int act, SubjectMapper *mapper);
-void grades_menu(Database *db, int act, GradeMapper *mapper);
-void auditories_menu(Database *db, int act, AuditoryMapper *mapper);
-void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper);
-void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper,
+void subjects_menu(int act, SubjectMapper *mapper);
+void grades_menu(int act, GradeMapper *mapper);
+void auditories_menu(int act, AuditoryMapper *mapper);
+void enrollee_menu(int act, EnrolleeMapper *mapper);
+void diploma_menu(int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper,
                   SubjectMapper *submapper, GradeMapper *grmapper);
-void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper,
+void exam_menu(int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper,
                GradeMapper *grmapper, AuditoryMapper *audmapper);
 
 int main() {
@@ -55,22 +55,22 @@ void act_menu(Database *db) {
 
         switch (tab) {
             case 1:
-                subjects_menu(db, act, &subject_mapper);
+                subjects_menu(act, &subject_mapper);
                 break;
             case 2:
-                grades_menu(db, act, &grade_mapper);
+                grades_menu(act, &grade_mapper);
                 break;
             case 3:
-                auditories_menu(db, act, &auditory_mapper);
+                auditories_menu(act, &auditory_mapper);
                 break;
             case 4:
-                enrollee_menu(db, act, &enrollee_mapper);
+                enrollee_menu(act, &enrollee_mapper);
                 break;
             case 5:
-                diploma_menu(db, act, &diploma_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper);
+                diploma_menu(act, &diploma_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper);
                 break;
             case 6:
-                exam_menu(db, act, &exam_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper,
+                exam_menu(act, &exam_mapper, &enrollee_mapper, &subject_mapper, &grade_mapper,
                           &auditory_mapper);
                 break;
             default:
@@ -79,7 +79,7 @@ void act_menu(Database *db) {
     }
 }
 
-void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
+void subjects_menu(int act, SubjectMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
@@ -95,7 +95,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
             cout << "Enter subject: ";
             cin >> name;
             obj.set_name(name);
-            mapper->insert(*db, obj);
+            mapper->insert(obj);
 
             break;
         }
@@ -106,7 +106,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
             cout << "Enter number of row you need to update: ";
             cin >> num;
             if (num < 1 || num > mapper->subjects.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -121,7 +121,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
                     break;
                 }
             }
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
 
             break;
         }
@@ -131,7 +131,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
             cout << "Enter number of row you need to delete: ";
             cin >> num;
             if (num < 1 || num > mapper->subjects.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -139,7 +139,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
                 if (i == num) {
                     obj.set_name(it->get_name());
                     obj.set_id(it->get_id());
-                    mapper->del(*db, obj);
+                    mapper->del(obj);
                     break;
                 }
             }
@@ -151,7 +151,7 @@ void subjects_menu(Database *db, int act, SubjectMapper *mapper) {
     }
 }
 
-void grades_menu(Database *db, int act, GradeMapper *mapper) {
+void grades_menu(int act, GradeMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
@@ -167,7 +167,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
             cout << "Enter grade: ";
             cin >> grade;
             obj.set_grade(grade);
-            mapper->insert(*db, obj);
+            mapper->insert(obj);
 
             break;
         }
@@ -178,7 +178,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
             cout << "Enter number of row you need to update: ";
             cin >> num;
             if (num < 1 || num > mapper->grades.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -193,7 +193,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
                     break;
                 }
             }
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
 
             break;
         }
@@ -203,7 +203,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
             cout << "Enter number of row you need to delete: ";
             cin >> num;
             if (num < 1 || num > mapper->grades.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -211,7 +211,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
                 if (i == num) {
                     obj.set_grade(it->get_grade());
                     obj.set_id(it->get_id());
-                    mapper->del(*db, obj);
+                    mapper->del(obj);
                     break;
                 }
             }
@@ -224,7 +224,7 @@ void grades_menu(Database *db, int act, GradeMapper *mapper) {
     }
 }
 
-void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
+void auditories_menu(int act, AuditoryMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
@@ -240,7 +240,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
             cout << "Enter auditory: ";
             cin >> auditory;
             obj.set_auditory(auditory);
-            mapper->insert(*db, obj);
+            mapper->insert(obj);
 
             break;
         }
@@ -251,7 +251,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
             cout << "Enter number of row you need to update: ";
             cin >> num;
             if (num < 1 || num > mapper->auditories.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -266,7 +266,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
                     break;
                 }
             }
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
 
             break;
         }
@@ -276,7 +276,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
             cout << "Enter number of row you need to delete: ";
             cin >> num;
             if (num < 1 || num > mapper->auditories.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -284,7 +284,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
                 if (i == num) {
                     obj.set_auditory(it->get_auditory());
                     obj.set_id(it->get_id());
-                    mapper->del(*db, obj);
+                    mapper->del(obj);
                     break;
                 }
             }
@@ -297,7 +297,7 @@ void auditories_menu(Database *db, int act, AuditoryMapper *mapper) {
     }
 }
 
-void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
+void enrollee_menu(int act, EnrolleeMapper *mapper) {
     switch (act) {
         case 1: {
             mapper->get_all();
@@ -382,7 +382,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
 
             enrollee.set_education(education);
             enrollee.set_passport(passport);
-            mapper->insert(*db, enrollee);
+            mapper->insert(enrollee);
 
             break;
         }
@@ -396,7 +396,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
             cout << "Enter row number: ";
             cin >> num;
             if (num < 1 || num > mapper->applicants.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -485,7 +485,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
                 return;
             }
 
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
             break;
         }
         case 4: {
@@ -504,7 +504,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
                 }
             }
 
-            mapper->del(*db, obj);
+            mapper->del(obj);
 
             break;
         }
@@ -514,7 +514,7 @@ void enrollee_menu(Database *db, int act, EnrolleeMapper *mapper) {
     }
 }
 
-void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper,
+void diploma_menu(int act, DiplomaMapper *mapper, EnrolleeMapper *enmapper,
                   SubjectMapper *submapper, GradeMapper *grmapper) {
     switch (act) {
         case 1: {
@@ -585,7 +585,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
 
             obj.set_grade(grade);
             obj.set_subject(subject);
-            mapper->insert(*db, obj);
+            mapper->insert(obj);
             break;
         }
         case 3: {
@@ -609,7 +609,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
             cout << "Enter row number: ";
             cin >> num;
             if (num < 1 || num > mapper->results.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -656,7 +656,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
                 return;
             }
 
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
             break;
         }
         case 4: {
@@ -666,13 +666,13 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
             cout << "Enter number of student: ";
             cin >> st;
             if (st < 1 || (unsigned int)st > enmapper->applicants.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
             cout << "Enter number of row you need to delete: ";
             cin >> num;
             if (num < 1 || num > mapper->results.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -690,7 +690,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
                     obj.set_grade(it->get_grade());
                     obj.set_subject(it->get_subject());
                     obj.set_id(it->get_id());
-                    mapper->del(*db, obj);
+                    mapper->del(obj);
                     break;
                 }
                 if (it->get_id() == st)
@@ -704,7 +704,7 @@ void diploma_menu(Database *db, int act, DiplomaMapper *mapper, EnrolleeMapper *
     }
 }
 
-void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper,
+void exam_menu(int act, ExamMapper *mapper, EnrolleeMapper *enmapper, SubjectMapper *submapper,
                GradeMapper *grmapper, AuditoryMapper *audmapper) {
     switch (act) {
         case 1: {
@@ -795,7 +795,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
             obj.set_auditory(auditory);
             obj.set_grade(grade);
             obj.set_subject(subject);
-            mapper->insert(*db, obj);
+            mapper->insert(obj);
             break;
         }
         case 3: {
@@ -819,7 +819,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
             cout << "Enter row number: ";
             cin >> num;
             if (num < 1 || num > mapper->results.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -883,7 +883,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
                 return;
             }
 
-            mapper->update(*db, old_obj, new_obj);
+            mapper->update(old_obj, new_obj);
             break;
         }
         case 4: {
@@ -893,13 +893,13 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
             cout << "Enter number of student: ";
             cin >> st;
             if (st < 1 || (unsigned int)st > enmapper->applicants.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
             cout << "Enter number of row you need to delete: ";
             cin >> num;
             if (num < 1 || num > mapper->results.size()) {
-                cout << "No such row" << endl;
+                cout << "Error" << endl;
                 return;
             }
 
@@ -919,7 +919,7 @@ void exam_menu(Database *db, int act, ExamMapper *mapper, EnrolleeMapper *enmapp
                     obj.set_grade(it->get_grade());
                     obj.set_subject(it->get_subject());
                     obj.set_id(it->get_id());
-                    mapper->del(*db, obj);
+                    mapper->del(obj);
                     break;
                 }
                 if (it->get_id() == st)

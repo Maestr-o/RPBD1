@@ -40,7 +40,7 @@ class SubjectMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Subject obj) {
+    void insert(Subject obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -60,7 +60,7 @@ class SubjectMapper {
         subjects.push_back(obj);
     }
 
-    void update(Database db, Subject old_obj, Subject new_obj) {
+    void update(Subject old_obj, Subject new_obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -77,7 +77,7 @@ class SubjectMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Subject obj) {
+    void del(Subject obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
         const char *query = "delete from subjects where subject = ?;";

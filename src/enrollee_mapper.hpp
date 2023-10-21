@@ -87,7 +87,7 @@ class EnrolleeMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Enrollee obj) {
+    void insert(Enrollee obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -135,8 +135,8 @@ class EnrolleeMapper {
         applicants.push_back(obj);
     }
 
-    void update(Database db, Enrollee old_obj, Enrollee new_obj) {
-        del(db, old_obj);
+    void update(Enrollee old_obj, Enrollee new_obj) {
+        del(old_obj);
 
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
@@ -178,7 +178,7 @@ class EnrolleeMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Enrollee obj) {
+    void del(Enrollee obj) {
         SQLHSTMT hstmt;
         char query[1000];
 

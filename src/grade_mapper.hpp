@@ -41,7 +41,7 @@ class GradeMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void insert(Database db, Grade obj) {
+    void insert(Grade obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -60,7 +60,7 @@ class GradeMapper {
         grades.push_back(obj);
     }
 
-    void update(Database db, Grade old_obj, Grade new_obj) {
+    void update(Grade old_obj, Grade new_obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
@@ -76,7 +76,7 @@ class GradeMapper {
         SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
     }
 
-    void del(Database db, Grade obj) {
+    void del(Grade obj) {
         SQLHSTMT hstmt;
         SQLAllocHandle(SQL_HANDLE_STMT, db.get_hdbc(), &hstmt);
 
